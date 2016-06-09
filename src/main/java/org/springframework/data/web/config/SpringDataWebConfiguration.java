@@ -18,7 +18,6 @@ package org.springframework.data.web.config;
 import java.util.List;
 
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -45,8 +44,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class SpringDataWebConfiguration extends WebMvcConfigurerAdapter {
 
-	@Autowired private ApplicationContext context;
-	@Autowired @Qualifier("mvcConversionService") ObjectFactory<ConversionService> conversionService;
+	private final ApplicationContext context;
+	private final ObjectFactory<ConversionService> conversionService;
+
+	public SpringDataWebConfiguration(ApplicationContext context,
+			@Qualifier("mvcConversionService") ObjectFactory<ConversionService> conversionService) {
+
+		this.context = context;
+		this.conversionService = conversionService;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -100,7 +106,6 @@ public class SpringDataWebConfiguration extends WebMvcConfigurerAdapter {
 		ProxyingHandlerMethodArgumentResolver resolver = new ProxyingHandlerMethodArgumentResolver(
 				conversionService.getObject());
 		resolver.setBeanFactory(context);
-		resolver.setResourceLoader(context);
 
 		argumentResolvers.add(resolver);
 	}

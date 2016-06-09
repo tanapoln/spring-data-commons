@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,8 @@ public class IsNewAwareAuditingHandlerUnitTests extends AuditingHandlerUnitTests
 	public void delegatesToMarkCreatedForNewEntity() {
 
 		AuditedUser user = new AuditedUser();
-		getHandler().markAudited(user);
+
+		getHandler().markAudited(Optional.of(user));
 
 		assertThat(user.createdDate, is(notNullValue()));
 		assertThat(user.modifiedDate, is(notNullValue()));
@@ -66,7 +68,8 @@ public class IsNewAwareAuditingHandlerUnitTests extends AuditingHandlerUnitTests
 
 		AuditedUser user = new AuditedUser();
 		user.id = 1L;
-		getHandler().markAudited(user);
+
+		getHandler().markAudited(Optional.of(user));
 
 		assertThat(user.createdDate, is(nullValue()));
 		assertThat(user.modifiedDate, is(notNullValue()));
@@ -92,13 +95,13 @@ public class IsNewAwareAuditingHandlerUnitTests extends AuditingHandlerUnitTests
 	 * @see DATACMNS-638
 	 */
 	@Test
-	public void handlingNullIsANoOp() {
+	public void handlingOptionalIsANoOp() {
 
 		IsNewAwareAuditingHandler handler = getHandler();
 
-		handler.markAudited(null);
-		handler.markCreated(null);
-		handler.markModified(null);
+		handler.markAudited(Optional.empty());
+		handler.markCreated(Optional.empty());
+		handler.markModified(Optional.empty());
 	}
 
 	static class Domain {

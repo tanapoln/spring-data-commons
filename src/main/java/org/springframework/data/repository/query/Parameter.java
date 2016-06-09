@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class Parameter {
 
-	@SuppressWarnings("unchecked") static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
+	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
 
 	private static final String NAMED_PARAMETER_TEMPLATE = ":%s";
 	private static final String POSITION_PARAMETER_TEMPLATE = "?%s";

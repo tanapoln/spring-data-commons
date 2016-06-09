@@ -18,6 +18,7 @@ package org.springframework.data.mapping.model;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -37,7 +38,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 
 	private final ParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();
 
-	private PreferredConstructor<T, P> constructor;
+	private Optional<PreferredConstructor<T, P>> constructor;
 
 	/**
 	 * Creates a new {@link PreferredConstructorDiscoverer} for the given type.
@@ -75,13 +76,13 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 
 			// Explicitly defined constructor trumps all
 			if (preferredConstructor.isExplicitlyAnnotated()) {
-				this.constructor = preferredConstructor;
+				this.constructor = Optional.of(preferredConstructor);
 				return;
 			}
 
 			// No-arg constructor trumps custom ones
 			if (this.constructor == null || preferredConstructor.isNoArgConstructor()) {
-				this.constructor = preferredConstructor;
+				this.constructor = Optional.of(preferredConstructor);
 			}
 
 			if (preferredConstructor.isNoArgConstructor()) {
@@ -92,7 +93,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 		}
 
 		if (!noArgConstructorFound && numberOfArgConstructors > 1) {
-			this.constructor = null;
+			this.constructor = Optional.empty();
 		}
 	}
 
@@ -128,7 +129,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 	 * 
 	 * @return
 	 */
-	public PreferredConstructor<T, P> getConstructor() {
+	public Optional<PreferredConstructor<T, P>> getConstructor() {
 		return constructor;
 	}
 }

@@ -26,7 +26,8 @@ import org.springframework.util.Assert;
  * 
  * @author Oliver Gierke
  */
-public class SpELExpressionParameterValueProvider<P extends PersistentProperty<P>> implements ParameterValueProvider<P> {
+public class SpELExpressionParameterValueProvider<P extends PersistentProperty<P>>
+		implements ParameterValueProvider<P> {
 
 	private final SpELExpressionEvaluator evaluator;
 	private final ParameterValueProvider<P> delegate;
@@ -63,7 +64,7 @@ public class SpELExpressionParameterValueProvider<P extends PersistentProperty<P
 			return delegate == null ? null : delegate.getParameterValue(parameter);
 		}
 
-		Object object = evaluator.evaluate(parameter.getSpelExpression());
+		Object object = evaluator.evaluate(parameter.getSpelExpression().orElse(null));
 		return object == null ? null : potentiallyConvertSpelValue(object, parameter);
 	}
 

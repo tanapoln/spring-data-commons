@@ -15,8 +15,9 @@
  */
 package org.springframework.data.auditing;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
 
@@ -40,19 +41,18 @@ public class AnnotationAuditingMetadataUnitTests {
 	static final Field lastModifiedByField = ReflectionUtils.findField(AnnotatedUser.class, "lastModifiedBy");
 	static final Field lastModifiedDateField = ReflectionUtils.findField(AnnotatedUser.class, "lastModifiedDate");
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	@Rule public ExpectedException exception = ExpectedException.none();
 
 	@Test
 	public void checkAnnotationDiscovery() {
 
 		AnnotationAuditingMetadata metadata = AnnotationAuditingMetadata.getMetadata(AnnotatedUser.class);
-		assertThat(metadata, is(notNullValue()));
 
-		assertThat(createdByField, is(metadata.getCreatedByField()));
-		assertThat(createdDateField, is(metadata.getCreatedDateField()));
-		assertThat(lastModifiedByField, is(metadata.getLastModifiedByField()));
-		assertThat(lastModifiedDateField, is(metadata.getLastModifiedDateField()));
+		assertThat(metadata).isNotNull();
+		assertThat(metadata.getCreatedByField()).hasValue(createdByField);
+		assertThat(metadata.getCreatedDateField()).hasValue(createdDateField);
+		assertThat(metadata.getLastModifiedByField()).hasValue(lastModifiedByField);
+		assertThat(metadata.getLastModifiedDateField()).hasValue(lastModifiedDateField);
 	}
 
 	@Test
@@ -82,8 +82,7 @@ public class AnnotationAuditingMetadataUnitTests {
 	public void rejectsInvalidDateTypeField() {
 
 		class Sample {
-			@CreatedDate
-			String field;
+			@CreatedDate String field;
 		}
 
 		exception.expect(IllegalStateException.class);

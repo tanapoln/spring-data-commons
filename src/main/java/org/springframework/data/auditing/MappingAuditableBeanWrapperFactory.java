@@ -15,9 +15,10 @@
  */
 package org.springframework.data.auditing;
 
-import java.util.Calendar;
+import java.time.temporal.TemporalAccessor;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -62,32 +63,27 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 	 * @see org.springframework.data.auditing.AuditableBeanWrapperFactory#getBeanWrapperFor(java.lang.Object)
 	 */
 	@Override
-	public AuditableBeanWrapper getBeanWrapperFor(Object source) {
+	public Optional<AuditableBeanWrapper> getBeanWrapperFor(Optional<? extends Object> source) {
 
-		if (source == null) {
-			return null;
-		}
+		return source.flatMap(it -> {
 
-		if (source instanceof Auditable) {
-			return super.getBeanWrapperFor(source);
-		}
+			if (it instanceof Auditable) {
+				return super.getBeanWrapperFor(source);
+			}
 
-		Class<?> type = source.getClass();
-		PersistentEntity<?, ?> entity = entities.getPersistentEntity(type);
+			Class<?> type = it.getClass();
+			PersistentEntity<?, ?> entity = entities.getPersistentEntity(type);
 
-		if (entity == null) {
-			return super.getBeanWrapperFor(source);
-		}
+			if (entity == null) {
+				return super.getBeanWrapperFor(source);
+			}
 
-		MappingAuditingMetadata metadata = metadataCache.get(type);
+			MappingAuditingMetadata metadata = metadataCache.computeIfAbsent(type,
+					foo -> new MappingAuditingMetadata(entity));
 
-		if (metadata == null) {
-			metadata = new MappingAuditingMetadata(entity);
-			metadataCache.put(type, metadata);
-		}
-
-		PersistentPropertyAccessor accessor = entity.getPropertyAccessor(source);
-		return metadata.isAuditable() ? new MappingMetadataAuditableBeanWrapper(accessor, metadata) : null;
+			return Optional.ofNullable(metadata.isAuditable()
+					? new MappingMetadataAuditableBeanWrapper(entity.getPropertyAccessor(it), metadata) : null);
+		});
 	}
 
 	/**
@@ -158,40 +154,44 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 
 		/* 
 		 * (non-Javadoc)
-		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setCreatedBy(java.lang.Object)
+		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setCreatedBy(java.util.Optional)
 		 */
 		@Override
-		public void setCreatedBy(Object value) {
+		public Optional<? extends Object> setCreatedBy(Optional<? extends Object> value) {
 
-			if (metadata.createdByProperty != null) {
-				this.accessor.setProperty(metadata.createdByProperty, value);
-			}
+			Optional.ofNullable(metadata.createdByProperty).ifPresent(it -> {
+				this.accessor.setProperty(metadata.createdByProperty, it);
+			});
+
+			return value;
 		}
 
 		/* 
 		 * (non-Javadoc)
-		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setCreatedDate(java.util.Calendar)
+		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setCreatedDate(java.util.Optional)
 		 */
 		@Override
-		public void setCreatedDate(Calendar value) {
+		public Optional<TemporalAccessor> setCreatedDate(Optional<TemporalAccessor> value) {
 
-			PersistentProperty<?> property = metadata.createdDateProperty;
+			Optional.ofNullable(metadata.createdDateProperty).ifPresent(it -> {
+				this.accessor.setProperty(it, getDateValueToSet(value, it.getType(), it));
+			});
 
-			if (property != null) {
-				this.accessor.setProperty(property, getDateValueToSet(value, property.getType(), property));
-			}
+			return value;
 		}
 
 		/* 
 		 * (non-Javadoc)
-		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setLastModifiedBy(java.lang.Object)
+		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setLastModifiedBy(java.util.Optional)
 		 */
 		@Override
-		public void setLastModifiedBy(Object value) {
+		public Optional<? extends Object> setLastModifiedBy(Optional<? extends Object> value) {
 
-			if (metadata.lastModifiedByProperty != null) {
+			Optional.ofNullable(metadata.lastModifiedByProperty).ifPresent(it -> {
 				this.accessor.setProperty(metadata.lastModifiedByProperty, value);
-			}
+			});
+
+			return value;
 		}
 
 		/* 
@@ -199,29 +199,25 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		 * @see org.springframework.data.auditing.AuditableBeanWrapper#getLastModifiedDate()
 		 */
 		@Override
-		public Calendar getLastModifiedDate() {
+		public Optional<TemporalAccessor> getLastModifiedDate() {
 
-			PersistentProperty<?> property = metadata.lastModifiedDateProperty;
+			Optional<PersistentProperty<?>> property = Optional.ofNullable(metadata.lastModifiedDateProperty);
 
-			if (property == null) {
-				return null;
-			}
-
-			return getAsCalendar(accessor.getProperty(property));
+			return getAsTemporalAccessor(property.map(it -> accessor.getProperty(it)), TemporalAccessor.class);
 		}
 
 		/* 
 		 * (non-Javadoc)
-		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setLastModifiedDate(java.util.Calendar)
+		 * @see org.springframework.data.auditing.AuditableBeanWrapper#setLastModifiedDate(java.util.Optional)
 		 */
 		@Override
-		public void setLastModifiedDate(Calendar value) {
+		public Optional<TemporalAccessor> setLastModifiedDate(Optional<TemporalAccessor> value) {
 
-			PersistentProperty<?> property = metadata.lastModifiedDateProperty;
+			Optional.ofNullable(metadata.lastModifiedDateProperty).ifPresent(it -> {
+				this.accessor.setProperty(it, getDateValueToSet(value, it.getType(), it));
+			});
 
-			if (property != null) {
-				this.accessor.setProperty(property, getDateValueToSet(value, property.getType(), property));
-			}
+			return value;
 		}
 	}
 }

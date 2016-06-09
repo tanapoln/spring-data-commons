@@ -18,6 +18,8 @@ package org.springframework.data.support;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.springframework.data.domain.Persistable;
 
@@ -33,16 +35,16 @@ public class PersistableIsNewStrategyUnitTests {
 	@Test
 	public void invokesPersistableIsNewForTest() {
 
-		PersistableEntity entity = new PersistableEntity();
+		Optional<PersistableEntity> entity = Optional.of(new PersistableEntity());
 		assertThat(strategy.isNew(entity), is(true));
 
-		entity.isNew = false;
+		entity.get().isNew = false;
 		assertThat(strategy.isNew(entity), is(false));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNonPersistableEntity() {
-		strategy.isNew(new Object());
+		strategy.isNew(Optional.of(new Object()));
 	}
 
 	@SuppressWarnings("serial")

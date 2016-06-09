@@ -64,10 +64,9 @@ public class ClassGeneratingPropertyAccessorFactoryDatatypeTests {
 	}
 
 	@Parameters(name = "{3}")
-	@SuppressWarnings("unchecked")
 	public static List<Object[]> parameters() throws Exception {
 
-		List<Object[]> parameters = new ArrayList<Object[]>();
+		List<Object[]> parameters = new ArrayList<>();
 		List<Class<?>> types = Arrays.asList(FieldAccess.class, PropertyAccess.class);
 
 		parameters.addAll(parameters(types, "primitiveInteger", Integer.valueOf(1)));

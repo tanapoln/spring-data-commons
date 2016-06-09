@@ -15,11 +15,13 @@
  */
 package org.springframework.data.auditing;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -27,6 +29,7 @@ import org.junit.Test;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.auditing.DefaultAuditableBeanWrapperFactory.ReflectionAuditingBeanWrapper;
+import org.springframework.data.convert.Jsr310Converters.LocalDateTimeToDateConverter;
 
 /**
  * Unit tests for {@link ReflectionAuditingBeanWrapper}.
@@ -40,13 +43,10 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 	AnnotatedUser user;
 	AuditableBeanWrapper wrapper;
 
-	Calendar calendar = new GregorianCalendar();
-	DateTime time = new DateTime(calendar);
+	LocalDateTime time = LocalDateTime.now();
 
 	@Before
 	public void setUp() {
-
-		assertThat(time, is(new DateTime(calendar)));
 
 		this.user = new AnnotatedUser();
 		this.wrapper = new ReflectionAuditingBeanWrapper(user);
@@ -55,15 +55,15 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 	@Test
 	public void setsDateTimeFieldCorrectly() {
 
-		wrapper.setCreatedDate(calendar);
-		assertThat(user.createdDate, is(time));
+		wrapper.setCreatedDate(Optional.of(time));
+		assertThat(user.createdDate, is(new DateTime(LocalDateTimeToDateConverter.INSTANCE.convert(time))));
 	}
 
 	@Test
 	public void setsDateFieldCorrectly() {
 
-		wrapper.setLastModifiedDate(calendar);
-		assertThat(user.lastModifiedDate, is(time.toDate()));
+		wrapper.setLastModifiedDate(Optional.of(time));
+		assertThat(user.lastModifiedDate).isEqualTo(LocalDateTimeToDateConverter.INSTANCE.convert(time));
 	}
 
 	@Test
@@ -79,11 +79,11 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 		Sample sample = new Sample();
 		AuditableBeanWrapper wrapper = new ReflectionAuditingBeanWrapper(sample);
 
-		wrapper.setCreatedDate(calendar);
-		assertThat(sample.createdDate, is(time.getMillis()));
+		wrapper.setCreatedDate(Optional.of(time));
+		assertThat(sample.createdDate, is(time.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()));
 
-		wrapper.setLastModifiedDate(calendar);
-		assertThat(sample.modifiedDate, is(time.getMillis()));
+		wrapper.setLastModifiedDate(Optional.of(time));
+		assertThat(sample.modifiedDate, is(time.atZone(ZoneOffset.systemDefault()).toInstant().toEpochMilli()));
 	}
 
 	@Test
@@ -91,10 +91,10 @@ public class ReflectionAuditingBeanWrapperUnitTests {
 
 		Object object = new Object();
 
-		wrapper.setCreatedBy(object);
+		wrapper.setCreatedBy(Optional.of(object));
 		assertThat(user.createdBy, is(object));
 
-		wrapper.setLastModifiedBy(object);
+		wrapper.setLastModifiedBy(Optional.of(object));
 		assertThat(user.lastModifiedBy, is(object));
 	}
 }

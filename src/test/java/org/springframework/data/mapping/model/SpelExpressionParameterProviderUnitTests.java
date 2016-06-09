@@ -19,6 +19,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,12 +37,9 @@ import org.springframework.data.mapping.model.AbstractPersistentPropertyUnitTest
 @RunWith(MockitoJUnitRunner.class)
 public class SpelExpressionParameterProviderUnitTests {
 
-	@Mock
-	SpELExpressionEvaluator evaluator;
-	@Mock
-	ParameterValueProvider<SamplePersistentProperty> delegate;
-	@Mock
-	ConversionService conversionService;
+	@Mock SpELExpressionEvaluator evaluator;
+	@Mock ParameterValueProvider<SamplePersistentProperty> delegate;
+	@Mock ConversionService conversionService;
 
 	SpELExpressionParameterValueProvider<SamplePersistentProperty> provider;
 
@@ -54,6 +53,7 @@ public class SpelExpressionParameterProviderUnitTests {
 
 		parameter = mock(Parameter.class);
 		when(parameter.hasSpelExpression()).thenReturn(true);
+		when(parameter.getSpelExpression()).thenReturn(Optional.empty());
 		when(parameter.getRawType()).thenReturn(Object.class);
 	}
 
@@ -72,7 +72,7 @@ public class SpelExpressionParameterProviderUnitTests {
 	@Test
 	public void evaluatesSpELExpression() {
 
-		when(parameter.getSpelExpression()).thenReturn("expression");
+		when(parameter.getSpelExpression()).thenReturn(Optional.of("expression"));
 
 		provider.getParameterValue(parameter);
 		verify(delegate, times(0)).getParameterValue(parameter);

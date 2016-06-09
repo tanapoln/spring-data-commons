@@ -103,7 +103,6 @@ public class MappingContextTypeInformationMapperUnitTests {
 	 * @see DATACMNS-485
 	 */
 	@Test
-	@SuppressWarnings("unchecked")
 	public void createsTypeMapperForGenericTypesWithDifferentBindings() {
 
 		AnnotatedTypeScanner scanner = new AnnotatedTypeScanner(TypeAlias.class);

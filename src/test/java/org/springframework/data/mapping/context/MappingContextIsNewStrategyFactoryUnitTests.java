@@ -15,12 +15,14 @@
  */
 package org.springframework.data.mapping.context;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +47,7 @@ public class MappingContextIsNewStrategyFactoryUnitTests {
 	public void setUp() {
 
 		SampleMappingContext context = new SampleMappingContext();
-		context.setInitialEntitySet(new HashSet<Class<?>>(Arrays.<Class<?>> asList(Entity.class, VersionedEntity.class)));
+		context.setInitialEntitySet(new HashSet<>(Arrays.asList(Entity.class, VersionedEntity.class)));
 		context.afterPropertiesSet();
 
 		factory = new MappingContextIsNewStrategyFactory(new PersistentEntities(Collections.singleton(context)));
@@ -55,19 +57,19 @@ public class MappingContextIsNewStrategyFactoryUnitTests {
 	public void returnsPropertyIsNullOrZeroIsNewStrategyForVersionedEntity() {
 
 		IsNewStrategy strategy = factory.getIsNewStrategy(VersionedEntity.class);
-		assertThat(strategy, is(instanceOf(PropertyIsNullOrZeroNumberIsNewStrategy.class)));
+		assertThat(strategy).isInstanceOf(PropertyIsNullOrZeroNumberIsNewStrategy.class);
 
-		VersionedEntity entity = new VersionedEntity();
-		assertThat(strategy.isNew(entity), is(true));
+		Optional<VersionedEntity> entity = Optional.of(new VersionedEntity());
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.id = 1L;
-		assertThat(strategy.isNew(entity), is(true));
+		entity.get().id = 1L;
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.version = 0L;
-		assertThat(strategy.isNew(entity), is(true));
+		entity.get().version = 0L;
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.version = 1L;
-		assertThat(strategy.isNew(entity), is(false));
+		entity.get().version = 1L;
+		assertThat(strategy.isNew(entity)).isFalse();
 	}
 
 	@Test
@@ -76,27 +78,27 @@ public class MappingContextIsNewStrategyFactoryUnitTests {
 		IsNewStrategy strategy = factory.getIsNewStrategy(VersionedEntity.class);
 		assertThat(strategy, is(instanceOf(PropertyIsNullOrZeroNumberIsNewStrategy.class)));
 
-		VersionedEntity entity = new VersionedEntity();
-		assertThat(strategy.isNew(entity), is(true));
+		Optional<VersionedEntity> entity = Optional.of(new VersionedEntity());
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.id = 1L;
-		assertThat(strategy.isNew(entity), is(true));
+		entity.get().id = 1L;
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.version = 1L;
-		assertThat(strategy.isNew(entity), is(false));
+		entity.get().version = 1L;
+		assertThat(strategy.isNew(entity)).isFalse();
 	}
 
 	@Test
 	public void returnsPropertyIsNullIsNewStrategyForEntity() {
 
 		IsNewStrategy strategy = factory.getIsNewStrategy(Entity.class);
-		assertThat(strategy, is(instanceOf(PropertyIsNullIsNewStrategy.class)));
+		assertThat(strategy).isInstanceOf(PropertyIsNullIsNewStrategy.class);
 
-		Entity entity = new Entity();
-		assertThat(strategy.isNew(entity), is(true));
+		Optional<Entity> entity = Optional.of(new Entity());
+		assertThat(strategy.isNew(entity)).isTrue();
 
-		entity.id = 1L;
-		assertThat(strategy.isNew(entity), is(false));
+		entity.get().id = 1L;
+		assertThat(strategy.isNew(entity)).isFalse();
 	}
 
 	@SuppressWarnings("serial")

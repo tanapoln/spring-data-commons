@@ -23,11 +23,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.util.Streamable;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -56,6 +58,7 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 	 * @param constructor must not be {@literal null}.
 	 * @param parameters must not be {@literal null}.
 	 */
+	@SafeVarargs
 	public PreferredConstructor(Constructor<T> constructor, Parameter<Object, P>... parameters) {
 
 		Assert.notNull(constructor);
@@ -80,8 +83,8 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 	 * 
 	 * @return
 	 */
-	public Iterable<Parameter<Object, P>> getParameters() {
-		return parameters;
+	public Streamable<Parameter<Object, P>> getParameters() {
+		return Streamable.of(parameters);
 	}
 
 	/**
@@ -185,7 +188,7 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 
 		private final String name;
 		private final TypeInformation<T> type;
-		private final String key;
+		private final Optional<String> key;
 		private final PersistentEntity<T, P> entity;
 
 		private Boolean enclosingClassCache;
@@ -212,13 +215,10 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 			this.entity = entity;
 		}
 
-		private String getValue(Annotation[] annotations) {
-			for (Annotation anno : annotations) {
-				if (anno.annotationType() == Value.class) {
-					return ((Value) anno).value();
-				}
-			}
-			return null;
+		private static Optional<String> getValue(Annotation[] annotations) {
+			return Arrays.stream(annotations).//
+					filter(it -> it.annotationType() == Value.class).//
+					findFirst().map(it -> ((Value) it).value());
 		}
 
 		/**
@@ -253,7 +253,7 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 		 * 
 		 * @return
 		 */
-		public String getSpelExpression() {
+		public Optional<String> getSpelExpression() {
 			return key;
 		}
 
@@ -265,7 +265,7 @@ public class PreferredConstructor<T, P extends PersistentProperty<P>> {
 		public boolean hasSpelExpression() {
 
 			if (this.hasSpelExpression == null) {
-				this.hasSpelExpression = StringUtils.hasText(getSpelExpression());
+				this.hasSpelExpression = getSpelExpression().map(StringUtils::hasText).orElse(false);
 			}
 
 			return this.hasSpelExpression;

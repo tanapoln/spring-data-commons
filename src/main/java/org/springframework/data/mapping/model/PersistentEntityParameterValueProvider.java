@@ -29,8 +29,8 @@ import org.springframework.util.Assert;
  * 
  * @author Oliver Gierke
  */
-public class PersistentEntityParameterValueProvider<P extends PersistentProperty<P>> implements
-		ParameterValueProvider<P> {
+public class PersistentEntityParameterValueProvider<P extends PersistentProperty<P>>
+		implements ParameterValueProvider<P> {
 
 	private final PersistentEntity<?, P> entity;
 	private final PropertyValueProvider<P> provider;
@@ -62,7 +62,7 @@ public class PersistentEntityParameterValueProvider<P extends PersistentProperty
 	@SuppressWarnings("unchecked")
 	public <T> T getParameterValue(Parameter<T, P> parameter) {
 
-		PreferredConstructor<?, P> constructor = entity.getPersistenceConstructor();
+		PreferredConstructor<?, P> constructor = entity.getPersistenceConstructor().get();
 
 		if (constructor.isEnclosingClassParameter(parameter)) {
 			return (T) parent;

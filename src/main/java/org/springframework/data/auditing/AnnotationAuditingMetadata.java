@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -119,52 +120,43 @@ final class AnnotationAuditingMetadata {
 	 * @param type the type to inspect, must not be {@literal null}.
 	 */
 	public static AnnotationAuditingMetadata getMetadata(Class<?> type) {
-
-		if (METADATA_CACHE.containsKey(type)) {
-			return METADATA_CACHE.get(type);
-		}
-
-		AnnotationAuditingMetadata metadata = new AnnotationAuditingMetadata(type);
-		METADATA_CACHE.put(type, metadata);
-		return metadata;
+		return METADATA_CACHE.computeIfAbsent(type, it -> new AnnotationAuditingMetadata(it));
 	}
 
 	/**
 	 * Returns whether the {@link Class} represented in this instance is auditable or not.
 	 */
 	public boolean isAuditable() {
-		if (createdByField == null && createdDateField == null && lastModifiedByField == null
-				&& lastModifiedDateField == null) {
-			return false;
-		}
-		return true;
+
+		return !(createdByField == null && createdDateField == null && lastModifiedByField == null
+				&& lastModifiedDateField == null);
 	}
 
 	/**
-	 * Return the field annotated by {@link CreatedBy}, or {@literal null}.
+	 * Return the field annotated by {@link CreatedBy}.
 	 */
-	public Field getCreatedByField() {
-		return createdByField;
+	public Optional<Field> getCreatedByField() {
+		return Optional.ofNullable(createdByField);
 	}
 
 	/**
-	 * Return the field annotated by {@link CreatedDate}, or {@literal null}.
+	 * Return the field annotated by {@link CreatedDate}.
 	 */
-	public Field getCreatedDateField() {
-		return createdDateField;
+	public Optional<Field> getCreatedDateField() {
+		return Optional.ofNullable(createdDateField);
 	}
 
 	/**
-	 * Return the field annotated by {@link LastModifiedBy}, or {@literal null}.
+	 * Return the field annotated by {@link LastModifiedBy}.
 	 */
-	public Field getLastModifiedByField() {
-		return lastModifiedByField;
+	public Optional<Field> getLastModifiedByField() {
+		return Optional.of(lastModifiedByField);
 	}
 
 	/**
-	 * Return the field annotated by {@link LastModifiedDate}, or {@literal null}.
+	 * Return the field annotated by {@link LastModifiedDate}.
 	 */
-	public Field getLastModifiedDateField() {
-		return lastModifiedDateField;
+	public Optional<Field> getLastModifiedDateField() {
+		return Optional.ofNullable(lastModifiedDateField);
 	}
 }

@@ -15,8 +15,10 @@
  */
 package org.springframework.data.history;
 
-import org.joda.time.DateTime;
-import org.springframework.util.Assert;
+import lombok.Value;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Wrapper to contain {@link RevisionMetadata} as well as the revisioned entity.
@@ -24,32 +26,25 @@ import org.springframework.util.Assert;
  * @author Oliver Gierke
  * @author Philipp Huegelmeyer
  */
+@Value(staticConstructor = "of")
 public final class Revision<N extends Number & Comparable<N>, T> implements Comparable<Revision<N, ?>> {
 
-	private final RevisionMetadata<N> metadata;
-	private final T entity;
+	/**
+	 * The {@link RevisionMetadata} for the current {@link Revision}.
+	 */
+	RevisionMetadata<N> metadata;
 
 	/**
-	 * Creates a new {@link Revision} consisting of the given {@link RevisionMetadata} and entity.
-	 * 
-	 * @param metadata must not be {@literal null}.
-	 * @param entity must not be {@literal null}.
+	 * The underlying entity.
 	 */
-	public Revision(RevisionMetadata<N> metadata, T entity) {
-
-		Assert.notNull(metadata);
-		Assert.notNull(entity);
-
-		this.metadata = metadata;
-		this.entity = entity;
-	}
+	T entity;
 
 	/**
 	 * Returns the revision number of the revision.
 	 * 
 	 * @return the revision number.
 	 */
-	public N getRevisionNumber() {
+	public Optional<N> getRevisionNumber() {
 		return metadata.getRevisionNumber();
 	}
 
@@ -58,26 +53,8 @@ public final class Revision<N extends Number & Comparable<N>, T> implements Comp
 	 * 
 	 * @return
 	 */
-	public DateTime getRevisionDate() {
+	public Optional<LocalDateTime> getRevisionDate() {
 		return metadata.getRevisionDate();
-	}
-
-	/**
-	 * Returns the underlying entity.
-	 * 
-	 * @return the entity
-	 */
-	public T getEntity() {
-		return entity;
-	}
-
-	/**
-	 * Returns the {@link RevisionMetadata} for the current {@link Revision}.
-	 * 
-	 * @return the metadata
-	 */
-	public RevisionMetadata<N> getMetadata() {
-		return metadata;
 	}
 
 	/*
@@ -85,40 +62,13 @@ public final class Revision<N extends Number & Comparable<N>, T> implements Comp
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(Revision<N, ?> that) {
-		return getRevisionNumber().compareTo(that.getRevisionNumber());
-	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj) {
+		Optional<N> thisRevisionNumber = getRevisionNumber();
+		Optional<N> thatRevisionNumber = that.getRevisionNumber();
 
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof Revision)) {
-			return false;
-		}
-
-		Revision<N, T> that = (Revision<N, T>) obj;
-		boolean sameRevisionNumber = this.metadata.getRevisionNumber().equals(that.metadata.getRevisionNumber());
-		return !sameRevisionNumber ? false : this.entity.equals(that.entity);
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-
-		int result = 17;
-		result += 31 * metadata.hashCode();
-		result += 31 * entity.hashCode();
-		return result;
+		return thisRevisionNumber.map(left -> {
+			return thatRevisionNumber.map(right -> left.compareTo(right)).orElse(1);
+		}).orElse(-1);
 	}
 
 	/* 
