@@ -334,7 +334,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 
 	/**
 	 * Checks the given method's parameters to match the ones of the given base class method. Matches generic arguments
-	 * agains the ones bound in the given repository interface.
+	 * against the ones bound in the given repository interface.
 	 * 
 	 * @param method
 	 * @param baseClassMethod
@@ -379,7 +379,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	 * @param parameterType
 	 * @return
 	 */
-	private boolean matchesGenericType(TypeVariable<?> variable, Class<?> parameterType) {
+	boolean matchesGenericType(TypeVariable<?> variable, Class<?> parameterType) {
 
 		Class<?> entityType = getDomainType();
 		Class<?> idClass = getIdType();

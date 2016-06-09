@@ -25,14 +25,23 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Test;
+import org.reactivestreams.Publisher;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.repository.Repository;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import rx.Completable;
+import rx.Observable;
+import rx.Single;
 
 /**
  * Unit tests for {@link QueryExecutionResultHandler}.
- * 
+ *
  * @author Oliver Gierke
+ * @author Mark Paluch
  */
 public class QueryExecutionResultHandlerUnitTests {
 
@@ -102,6 +111,295 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(optional, is(com.google.common.base.Optional.of(entity)));
 	}
 
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaSingleIntoPublisher() throws Exception {
+
+		Single<Entity> entity = Single.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("publisher"));
+		assertThat(result, is(instanceOf(Publisher.class)));
+
+		Mono<Entity> mono = Mono.from((Publisher<Entity>) result);
+		assertThat(mono.get(), is(entity.toBlocking().value()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaSingleIntoMono() throws Exception {
+
+		Single<Entity> entity = Single.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("mono"));
+		assertThat(result, is(instanceOf(Mono.class)));
+
+		Mono<Entity> mono = (Mono<Entity>) result;
+		assertThat(mono.get(), is(entity.toBlocking().value()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaSingleIntoFlux() throws Exception {
+
+		Single<Entity> entity = Single.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("flux"));
+		assertThat(result, is(instanceOf(Flux.class)));
+
+		Flux<Entity> flux = (Flux<Entity>) result;
+		assertThat(flux.next().get(), is(entity.toBlocking().value()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaObservableIntoPublisher() throws Exception {
+
+		Observable<Entity> entity = Observable.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("publisher"));
+		assertThat(result, is(instanceOf(Publisher.class)));
+
+		Mono<Entity> mono = Mono.from((Publisher<Entity>) result);
+		assertThat(mono.get(), is(entity.toBlocking().first()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaObservableIntoMono() throws Exception {
+
+		Observable<Entity> entity = Observable.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("mono"));
+		assertThat(result, is(instanceOf(Mono.class)));
+
+		Mono<Entity> mono = (Mono<Entity>) result;
+		assertThat(mono.get(), is(entity.toBlocking().first()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaObservableIntoFlux() throws Exception {
+
+		Observable<Entity> entity = Observable.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("flux"));
+		assertThat(result, is(instanceOf(Flux.class)));
+
+		Flux<Entity> flux = (Flux<Entity>) result;
+		assertThat(flux.next().get(), is(entity.toBlocking().first()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaObservableIntoSingle() throws Exception {
+
+		Observable<Entity> entity = Observable.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("single"));
+		assertThat(result, is(instanceOf(Single.class)));
+
+		Single<Entity> single = (Single<Entity>) result;
+		assertThat(single.toBlocking().value(), is(entity.toBlocking().first()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaSingleIntoObservable() throws Exception {
+
+		Single<Entity> entity = Single.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("observable"));
+		assertThat(result, is(instanceOf(Observable.class)));
+
+		Observable<Entity> observable = (Observable<Entity>) result;
+		assertThat(observable.toBlocking().first(), is(entity.toBlocking().value()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorMonoIntoSingle() throws Exception {
+
+		Mono<Entity> entity = Mono.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("single"));
+		assertThat(result, is(instanceOf(Single.class)));
+
+		Single<Entity> single = (Single<Entity>) result;
+		assertThat(single.toBlocking().value(), is(entity.get()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorMonoIntoCompletable() throws Exception {
+
+		Mono<Entity> entity = Mono.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("completable"));
+		assertThat(result, is(instanceOf(Completable.class)));
+
+		Completable completable = (Completable) result;
+		assertThat(completable.get(), is(nullValue()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorMonoIntoCompletableWithException() throws Exception {
+
+		Mono<Entity> entity = Mono.error(new InvalidDataAccessApiUsageException("err"));
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("completable"));
+		assertThat(result, is(instanceOf(Completable.class)));
+
+		Completable completable = (Completable) result;
+		assertThat(completable.get(), is(instanceOf(InvalidDataAccessApiUsageException.class)));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaCompletableIntoMono() throws Exception {
+
+		Completable entity = Completable.complete();
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("mono"));
+		assertThat(result, is(instanceOf(Mono.class)));
+
+		Mono mono = (Mono) result;
+		assertThat(mono.get(), is(nullValue()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test(expected = InvalidDataAccessApiUsageException.class)
+	@SuppressWarnings("unchecked")
+	public void convertsRxJavaCompletableIntoMonoWithException() throws Exception {
+
+		Completable entity = Completable.error(new InvalidDataAccessApiUsageException("err"));
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("mono"));
+		assertThat(result, is(instanceOf(Mono.class)));
+
+		Mono mono = (Mono) result;
+		mono.get();
+		fail("Missing InvalidDataAccessApiUsageException");
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorMonoIntoObservable() throws Exception {
+
+		Mono<Entity> entity = Mono.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("observable"));
+		assertThat(result, is(instanceOf(Observable.class)));
+
+		Observable<Entity> observable = (Observable<Entity>) result;
+		assertThat(observable.toBlocking().first(), is(entity.get()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorFluxIntoSingle() throws Exception {
+
+		Flux<Entity> entity = Flux.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("single"));
+		assertThat(result, is(instanceOf(Single.class)));
+
+		Single<Entity> single = (Single<Entity>) result;
+		assertThat(single.toBlocking().value(), is(entity.next().get()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorFluxIntoObservable() throws Exception {
+
+		Flux<Entity> entity = Flux.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("observable"));
+		assertThat(result, is(instanceOf(Observable.class)));
+
+		Observable<Entity> observable = (Observable<Entity>) result;
+		assertThat(observable.toBlocking().first(), is(entity.next().get()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorFluxIntoMono() throws Exception {
+
+		Flux<Entity> entity = Flux.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("mono"));
+		assertThat(result, is(instanceOf(Mono.class)));
+
+		Mono<Entity> mono = (Mono<Entity>) result;
+		assertThat(mono.get(), is(entity.next().get()));
+	}
+
+	/**
+	 * @see DATACMNS-836
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void convertsReactorMonoIntoFlux() throws Exception {
+
+		Mono<Entity> entity = Mono.just(new Entity());
+
+		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("flux"));
+		assertThat(result, is(instanceOf(Flux.class)));
+
+		Flux<Entity> flux = (Flux<Entity>) result;
+		assertThat(flux.next().get(), is(entity.get()));
+	}
+
 	private static TypeDescriptor getTypeDescriptorFor(String methodName) throws Exception {
 
 		Method method = Sample.class.getMethod(methodName);
@@ -117,7 +415,21 @@ public class QueryExecutionResultHandlerUnitTests {
 		Optional<Entity> jdk8Optional();
 
 		com.google.common.base.Optional<Entity> guavaOptional();
+
+		Publisher<Entity> publisher();
+
+		Mono<Entity> mono();
+
+		Flux<Entity> flux();
+
+		Single<Entity> single();
+
+		Observable<Entity> observable();
+
+		Completable completable();
 	}
 
-	static class Entity {}
+	static class Entity {
+
+	}
 }
