@@ -15,6 +15,8 @@
  */
 package org.springframework.data.util;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -34,6 +36,15 @@ public interface Streamable<T> extends Iterable<T> {
 	 */
 	default Stream<T> stream() {
 		return StreamSupport.stream(spliterator(), false);
+	}
+
+	public static <T> Streamable<T> empty() {
+		return () -> Collections.emptyIterator();
+	}
+
+	@SafeVarargs
+	public static <T> Streamable<T> of(T... t) {
+		return () -> Arrays.asList(t).iterator();
 	}
 
 	/**

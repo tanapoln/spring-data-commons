@@ -15,8 +15,7 @@
  */
 package org.springframework.data.mapping.model;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -114,7 +113,7 @@ public class SpelExpressionParameterProviderUnitTests {
 		when(evaluator.evaluate(Mockito.anyString())).thenReturn("value");
 
 		Object result = provider.getParameterValue(parameter);
-		assertThat(result, is((Object) "FOO"));
+		assertThat(result).isEqualTo("FOO");
 		verify(delegate, times(0)).getParameterValue(parameter);
 	}
 }

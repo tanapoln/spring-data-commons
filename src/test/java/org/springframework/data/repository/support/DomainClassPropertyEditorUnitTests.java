@@ -15,8 +15,7 @@
  */
 package org.springframework.data.repository.support;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.beans.PropertyEditor;
@@ -69,7 +68,7 @@ public class DomainClassPropertyEditorUnitTests {
 		User user = new User(1);
 		editor.setValue(user);
 		when(information.getId(user)).thenReturn(user.getId());
-		assertThat(editor.getAsText(), is("1"));
+		assertThat(editor.getAsText()).isEqualTo("1");
 	}
 
 	@Test
@@ -89,7 +88,7 @@ public class DomainClassPropertyEditorUnitTests {
 	public void returnsNullIdIfNoEntitySet() throws Exception {
 
 		editor.setValue(null);
-		assertThat(editor.getAsText(), is(nullValue()));
+		assertThat(editor.getAsText()).isNull();
 	}
 
 	@Test
@@ -107,10 +106,10 @@ public class DomainClassPropertyEditorUnitTests {
 	private void assertValueResetToNullAfterConverting(String source) throws Exception {
 
 		convertsPlainIdTypeCorrectly();
-		assertThat(editor.getValue(), is(notNullValue()));
+		assertThat(editor.getValue()).isNotNull();
 
 		editor.setAsText(source);
-		assertThat(editor.getValue(), is(nullValue()));
+		assertThat(editor.getValue()).isNull();
 	}
 
 	/**

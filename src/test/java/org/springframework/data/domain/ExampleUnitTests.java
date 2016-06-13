@@ -15,8 +15,7 @@
  */
 package org.springframework.data.domain;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +54,7 @@ public class ExampleUnitTests {
 	 */
 	@Test
 	public void retunsSampleObjectsClassAsProbeType() {
-		assertThat(example.getProbeType(), is(equalTo(Person.class)));
+		assertThat(example.getProbeType()).isEqualTo(Person.class);
 	}
 
 	static class Person {

@@ -21,7 +21,7 @@ import com.querydsl.core.types.Path;
 import com.querydsl.core.types.Predicate;
 
 /**
- * {@link SingleValueBinding} creates a {@link Predicate} out of given {@link Path} and value. Used for specific
+ * {@link OptionalValueBinding} creates a {@link Predicate} out of given {@link Path} and value. Used for specific
  * parameter treatment in {@link QuerydslBindings}.
  * 
  * @author Christoph Strobl
@@ -29,7 +29,7 @@ import com.querydsl.core.types.Predicate;
  * @since 1.11
  */
 @FunctionalInterface
-public interface SingleValueBinding<T extends Path<? extends S>, S> {
+public interface OptionalValueBinding<T extends Path<? extends S>, S> {
 
 	/**
 	 * Returns the predicate to be applied to the given {@link Path} for the given value. The given value will be the
@@ -40,5 +40,5 @@ public interface SingleValueBinding<T extends Path<? extends S>, S> {
 	 * @return can be {@literal null}, in which case the binding will not be incorporated in the overall {@link Predicate}
 	 *         .
 	 */
-	Optional<Predicate> bind(T path, S value);
+	Optional<Predicate> bind(T path, Optional<? extends S> value);
 }

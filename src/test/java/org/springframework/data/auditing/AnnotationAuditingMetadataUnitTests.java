@@ -15,9 +15,7 @@
  */
 package org.springframework.data.auditing;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Field;
 
@@ -59,23 +57,22 @@ public class AnnotationAuditingMetadataUnitTests {
 	public void checkCaching() {
 
 		AnnotationAuditingMetadata firstCall = AnnotationAuditingMetadata.getMetadata(AnnotatedUser.class);
-		assertThat(firstCall, is(notNullValue()));
+		assertThat(firstCall).isNotNull();
 
 		AnnotationAuditingMetadata secondCall = AnnotationAuditingMetadata.getMetadata(AnnotatedUser.class);
-		assertThat(firstCall, is(secondCall));
+		assertThat(firstCall).isEqualTo(secondCall);
 	}
 
 	@Test
 	public void checkIsAuditable() {
 
 		AnnotationAuditingMetadata metadata = AnnotationAuditingMetadata.getMetadata(AnnotatedUser.class);
-		assertThat(metadata, is(notNullValue()));
-		;
-		assertThat(metadata.isAuditable(), is(true));
+		assertThat(metadata).isNotNull();
+		assertThat(metadata.isAuditable()).isTrue();
 
 		metadata = AnnotationAuditingMetadata.getMetadata(NonAuditableUser.class);
-		assertThat(metadata, is(notNullValue()));
-		assertThat(metadata.isAuditable(), is(false));
+		assertThat(metadata).isNotNull();
+		assertThat(metadata.isAuditable()).isFalse();
 	}
 
 	@Test

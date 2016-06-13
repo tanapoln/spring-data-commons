@@ -55,7 +55,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 	 * @param entity must not be {@literal null}.
 	 */
 	public PreferredConstructorDiscoverer(PersistentEntity<T, P> entity) {
-		this(entity.getTypeInformation(), entity);
+		this(entity.getTypeInformation(), Optional.ofNullable(entity));
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 	 * @param type must not be {@literal null}.
 	 * @param entity
 	 */
-	protected PreferredConstructorDiscoverer(TypeInformation<T> type, PersistentEntity<T, P> entity) {
+	protected PreferredConstructorDiscoverer(TypeInformation<T> type, Optional<PersistentEntity<T, P>> entity) {
 
 		boolean noArgConstructorFound = false;
 		int numberOfArgConstructors = 0;
@@ -99,7 +99,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private PreferredConstructor<T, P> buildPreferredConstructor(Constructor<?> constructor,
-			TypeInformation<T> typeInformation, PersistentEntity<T, P> entity) {
+			TypeInformation<T> typeInformation, Optional<PersistentEntity<T, P>> entity) {
 
 		List<TypeInformation<?>> parameterTypes = typeInformation.getParameterTypes(constructor);
 
@@ -114,7 +114,7 @@ public class PreferredConstructorDiscoverer<T, P extends PersistentProperty<P>> 
 
 		for (int i = 0; i < parameterTypes.size(); i++) {
 
-			String name = parameterNames == null ? null : parameterNames[i];
+			Optional<String> name = Optional.ofNullable(parameterNames == null ? null : parameterNames[i]);
 			TypeInformation<?> type = parameterTypes.get(i);
 			Annotation[] annotations = parameterAnnotations[i];
 

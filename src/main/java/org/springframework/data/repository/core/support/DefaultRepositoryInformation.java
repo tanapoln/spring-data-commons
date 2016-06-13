@@ -23,9 +23,11 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +39,7 @@ import org.springframework.data.repository.core.CrudMethods;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.util.ReflectionUtils;
+import org.springframework.data.util.Streamable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -57,17 +60,17 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 
 	private final RepositoryMetadata metadata;
 	private final Class<?> repositoryBaseClass;
-	private final Class<?> customImplementationClass;
+	private final Optional<Class<?>> customImplementationClass;
 
 	/**
 	 * Creates a new {@link DefaultRepositoryMetadata} for the given repository interface and repository base class.
 	 * 
 	 * @param metadata must not be {@literal null}.
 	 * @param repositoryBaseClass must not be {@literal null}.
-	 * @param customImplementationClass
+	 * @param customImplementationClass must not be {@literal null}.
 	 */
 	public DefaultRepositoryInformation(RepositoryMetadata metadata, Class<?> repositoryBaseClass,
-			Class<?> customImplementationClass) {
+			Optional<Class<?>> customImplementationClass) {
 
 		Assert.notNull(metadata);
 		Assert.notNull(repositoryBaseClass);
@@ -121,7 +124,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 			return cacheAndReturn(method, result);
 		}
 
-		return cacheAndReturn(method, getTargetClassMethod(method, repositoryBaseClass));
+		return cacheAndReturn(method, getTargetClassMethod(method, Optional.of(repositoryBaseClass)));
 	}
 
 	private Method cacheAndReturn(Method key, Method value) {
@@ -140,19 +143,12 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	 * @param method
 	 * @return
 	 */
-	private boolean isTargetClassMethod(Method method, Class<?> targetType) {
+	private boolean isTargetClassMethod(Method method, Optional<Class<?>> targetType) {
 
 		Assert.notNull(method);
 
-		if (targetType == null) {
-			return false;
-		}
-
-		if (method.getDeclaringClass().isAssignableFrom(targetType)) {
-			return true;
-		}
-
-		return !method.equals(getTargetClassMethod(method, targetType));
+		return targetType.map(it -> method.getDeclaringClass().isAssignableFrom(it)
+				|| !method.equals(getTargetClassMethod(method, targetType))).orElse(false);
 	}
 
 	/*
@@ -160,7 +156,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	 * @see org.springframework.data.repository.support.RepositoryInformation#getQueryMethods()
 	 */
 	@Override
-	public Set<Method> getQueryMethods() {
+	public Streamable<Method> getQueryMethods() {
 
 		Set<Method> result = new HashSet<Method>();
 
@@ -171,7 +167,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 			}
 		}
 
-		return Collections.unmodifiableSet(result);
+		return Streamable.of(Collections.unmodifiableSet(result));
 	}
 
 	/**
@@ -212,7 +208,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	 */
 	@Override
 	public boolean isQueryMethod(Method method) {
-		return getQueryMethods().contains(method);
+		return getQueryMethods().stream().anyMatch(it -> it.equals(method));
 	}
 
 	/*
@@ -223,7 +219,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	public boolean isBaseClassMethod(Method method) {
 
 		Assert.notNull(method, "Method must not be null!");
-		return isTargetClassMethod(method, repositoryBaseClass);
+		return isTargetClassMethod(method, Optional.of(repositoryBaseClass));
 	}
 
 	/**
@@ -235,33 +231,17 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	 * @param baseClass
 	 * @return
 	 */
-	Method getTargetClassMethod(Method method, Class<?> baseClass) {
+	Method getTargetClassMethod(Method method, Optional<Class<?>> baseClass) {
 
-		if (baseClass == null) {
-			return method;
-		}
+		return baseClass.map(it -> {
 
-		for (Method baseClassMethod : baseClass.getMethods()) {
+			return Arrays.stream(it.getMethods())//
+					.filter(baseClassMethod -> method.getName().equals(baseClassMethod.getName()))// Right name
+					.filter(baseClassMethod -> method.getParameterTypes().length == baseClassMethod.getParameterTypes().length)
+					.filter(baseClassMethod -> parametersMatch(method, baseClassMethod))// All parameters match
+					.findFirst().orElse(method);
 
-			// Wrong name
-			if (!method.getName().equals(baseClassMethod.getName())) {
-				continue;
-			}
-
-			// Wrong number of arguments
-			if (!(method.getParameterTypes().length == baseClassMethod.getParameterTypes().length)) {
-				continue;
-			}
-
-			// Check whether all parameters match
-			if (!parametersMatch(method, baseClassMethod)) {
-				continue;
-			}
-
-			return baseClassMethod;
-		}
-
-		return method;
+		}).orElse(method);
 	}
 
 	/*

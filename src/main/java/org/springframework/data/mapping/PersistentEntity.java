@@ -79,7 +79,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * 
 	 * @return the id property of the {@link PersistentEntity}.
 	 */
-	P getIdProperty();
+	Optional<P> getIdProperty();
 
 	/**
 	 * Returns the version property of the {@link PersistentEntity}. Can be {@literal null} in case no version property is
@@ -87,7 +87,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * 
 	 * @return the version property of the {@link PersistentEntity}.
 	 */
-	P getVersionProperty();
+	Optional<P> getVersionProperty();
 
 	/**
 	 * Obtains a {@link PersistentProperty} instance by name.
@@ -95,7 +95,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * @param name The name of the property
 	 * @return the {@link PersistentProperty} or {@literal null} if it doesn't exist.
 	 */
-	P getPersistentProperty(String name);
+	Optional<P> getPersistentProperty(String name);
 
 	/**
 	 * Returns the property equipped with an annotation of the given type.
@@ -104,7 +104,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * @return
 	 * @since 1.8
 	 */
-	P getPersistentProperty(Class<? extends Annotation> annotationType);
+	Optional<P> getPersistentProperty(Class<? extends Annotation> annotationType);
 
 	/**
 	 * Returns whether the {@link PersistentEntity} has an id property. If this call returns {@literal true},
@@ -135,7 +135,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * 
 	 * @return
 	 */
-	Object getTypeAlias();
+	Optional<? extends Object> getTypeAlias();
 
 	/**
 	 * Returns the {@link TypeInformation} backing this {@link PersistentEntity}.
@@ -170,7 +170,7 @@ public interface PersistentEntity<T, P extends PersistentProperty<P>> {
 	 * @return
 	 * @since 1.8
 	 */
-	<A extends Annotation> A findAnnotation(Class<A> annotationType);
+	<A extends Annotation> Optional<A> findAnnotation(Class<A> annotationType);
 
 	/**
 	 * Returns a {@link PersistentPropertyAccessor} to access property values of the given bean.

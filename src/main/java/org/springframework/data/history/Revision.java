@@ -15,6 +15,9 @@
  */
 package org.springframework.data.history;
 
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 import java.time.LocalDateTime;
@@ -26,18 +29,30 @@ import java.util.Optional;
  * @author Oliver Gierke
  * @author Philipp Huegelmeyer
  */
-@Value(staticConstructor = "of")
+@Value
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Revision<N extends Number & Comparable<N>, T> implements Comparable<Revision<N, ?>> {
 
 	/**
 	 * The {@link RevisionMetadata} for the current {@link Revision}.
 	 */
-	RevisionMetadata<N> metadata;
+	@NonNull RevisionMetadata<N> metadata;
 
 	/**
 	 * The underlying entity.
 	 */
-	T entity;
+	@NonNull T entity;
+
+	/**
+	 * Creates a new {@link Revision} for the given {@link RevisionMetadata} and entity.
+	 * 
+	 * @param metadata must not be {@literal null}.
+	 * @param entity must not be {@literal null}.
+	 * @return
+	 */
+	public static <N extends Number & Comparable<N>, T> Revision<N, T> of(RevisionMetadata<N> metadata, T entity) {
+		return new Revision<N, T>(metadata, entity);
+	}
 
 	/**
 	 * Returns the revision number of the revision.

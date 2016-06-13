@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.mapping.model.PreferredConstructorDiscoverer;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.ProjectionInformation;
+import org.springframework.data.util.Optionals;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -282,13 +283,13 @@ public abstract class ReturnedType {
 
 			PreferredConstructorDiscoverer<?, ?> discoverer = new PreferredConstructorDiscoverer(type);
 
-			return discoverer.getConstructor().map(constructor ->
+			return discoverer.getConstructor().map(it -> {
 
-			constructor.getParameters().stream()//
-					.map(parameter -> parameter.getName())//
-					.collect(Collectors.toList())
+				return it.getParameters().stream()//
+						.flatMap(parameter -> Optionals.toStream(parameter.getName()))//
+						.collect(Collectors.toList());
 
-			).orElse(Collections.emptyList());
+			}).orElse(Collections.emptyList());
 		}
 
 		private boolean isDto() {

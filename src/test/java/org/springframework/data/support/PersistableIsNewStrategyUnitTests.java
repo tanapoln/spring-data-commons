@@ -15,8 +15,7 @@
  */
 package org.springframework.data.support;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
 
@@ -36,10 +35,10 @@ public class PersistableIsNewStrategyUnitTests {
 	public void invokesPersistableIsNewForTest() {
 
 		Optional<PersistableEntity> entity = Optional.of(new PersistableEntity());
-		assertThat(strategy.isNew(entity), is(true));
+		assertThat(strategy.isNew(entity)).isTrue();
 
 		entity.get().isNew = false;
-		assertThat(strategy.isNew(entity), is(false));
+		assertThat(strategy.isNew(entity)).isFalse();
 	}
 
 	@Test(expected = IllegalArgumentException.class)

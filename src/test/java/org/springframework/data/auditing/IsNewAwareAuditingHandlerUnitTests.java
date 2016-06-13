@@ -15,8 +15,7 @@
  */
 package org.springframework.data.auditing;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -59,8 +58,8 @@ public class IsNewAwareAuditingHandlerUnitTests extends AuditingHandlerUnitTests
 
 		getHandler().markAudited(Optional.of(user));
 
-		assertThat(user.createdDate, is(notNullValue()));
-		assertThat(user.modifiedDate, is(notNullValue()));
+		assertThat(user.createdDate).isNotNull();
+		assertThat(user.modifiedDate).isNotNull();
 	}
 
 	@Test
@@ -71,8 +70,8 @@ public class IsNewAwareAuditingHandlerUnitTests extends AuditingHandlerUnitTests
 
 		getHandler().markAudited(Optional.of(user));
 
-		assertThat(user.createdDate, is(nullValue()));
-		assertThat(user.modifiedDate, is(notNullValue()));
+		assertThat(user.createdDate).isNull();
+		assertThat(user.modifiedDate).isNotNull();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.mapping;
+package org.springframework.data.util;
+
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
- * Interface for a component allowing the access of identifier values.
- * 
  * @author Oliver Gierke
  */
-public interface IdentifierAccessor {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+public class Lazy<T> {
+
+	private final Supplier<T> supplier;
+	private Optional<T> value;
+
+	public static <T> Lazy<T> of(Supplier<T> supplier) {
+		return new Lazy<T>(supplier);
+	}
 
 	/**
-	 * Returns the value of the identifier.
+	 * Returns the value created by the configured {@link Supplier}.
 	 * 
 	 * @return
 	 */
-	Optional<? extends Object> getIdentifier();
+	public T get() {
+
+		if (value == null) {
+			this.value = Optional.ofNullable(supplier.get());
+		}
+
+		return value.orElse(null);
+	}
 }

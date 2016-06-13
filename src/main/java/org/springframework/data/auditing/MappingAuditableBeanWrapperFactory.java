@@ -30,6 +30,7 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.mapping.context.PersistentEntities;
+import org.springframework.data.util.Optionals;
 import org.springframework.util.Assert;
 
 /**
@@ -94,8 +95,8 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 	 */
 	static class MappingAuditingMetadata {
 
-		private final PersistentProperty<?> createdByProperty, createdDateProperty, lastModifiedByProperty,
-				lastModifiedDateProperty;
+		private final Optional<? extends PersistentProperty<?>> createdByProperty, createdDateProperty,
+				lastModifiedByProperty, lastModifiedDateProperty;
 
 		/**
 		 * Creates a new {@link MappingAuditingMetadata} instance from the given {@link PersistentEntity}.
@@ -119,8 +120,8 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		 * @return
 		 */
 		public boolean isAuditable() {
-			return createdByProperty != null || createdDateProperty != null || lastModifiedByProperty != null
-					|| lastModifiedDateProperty != null;
+			return Optionals.isAnyPresent(createdByProperty, createdDateProperty, lastModifiedByProperty,
+					lastModifiedDateProperty);
 		}
 	}
 
@@ -159,8 +160,8 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		@Override
 		public Optional<? extends Object> setCreatedBy(Optional<? extends Object> value) {
 
-			Optional.ofNullable(metadata.createdByProperty).ifPresent(it -> {
-				this.accessor.setProperty(metadata.createdByProperty, it);
+			metadata.createdByProperty.ifPresent(it -> {
+				this.accessor.setProperty(it, value);
 			});
 
 			return value;
@@ -173,7 +174,7 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		@Override
 		public Optional<TemporalAccessor> setCreatedDate(Optional<TemporalAccessor> value) {
 
-			Optional.ofNullable(metadata.createdDateProperty).ifPresent(it -> {
+			metadata.createdDateProperty.ifPresent(it -> {
 				this.accessor.setProperty(it, getDateValueToSet(value, it.getType(), it));
 			});
 
@@ -187,8 +188,8 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		@Override
 		public Optional<? extends Object> setLastModifiedBy(Optional<? extends Object> value) {
 
-			Optional.ofNullable(metadata.lastModifiedByProperty).ifPresent(it -> {
-				this.accessor.setProperty(metadata.lastModifiedByProperty, value);
+			metadata.lastModifiedByProperty.ifPresent(it -> {
+				this.accessor.setProperty(it, value);
 			});
 
 			return value;
@@ -200,10 +201,8 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		 */
 		@Override
 		public Optional<TemporalAccessor> getLastModifiedDate() {
-
-			Optional<PersistentProperty<?>> property = Optional.ofNullable(metadata.lastModifiedDateProperty);
-
-			return getAsTemporalAccessor(property.map(it -> accessor.getProperty(it)), TemporalAccessor.class);
+			return getAsTemporalAccessor(metadata.lastModifiedDateProperty.map(it -> accessor.getProperty(it)),
+					TemporalAccessor.class);
 		}
 
 		/* 
@@ -213,7 +212,7 @@ public class MappingAuditableBeanWrapperFactory extends DefaultAuditableBeanWrap
 		@Override
 		public Optional<TemporalAccessor> setLastModifiedDate(Optional<TemporalAccessor> value) {
 
-			Optional.ofNullable(metadata.lastModifiedDateProperty).ifPresent(it -> {
+			metadata.lastModifiedDateProperty.ifPresent(it -> {
 				this.accessor.setProperty(it, getDateValueToSet(value, it.getType(), it));
 			});
 

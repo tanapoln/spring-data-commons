@@ -15,9 +15,7 @@
  */
 package org.springframework.data.mapping.context;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,7 +74,7 @@ public class MappingContextIsNewStrategyFactoryUnitTests {
 	public void returnsPropertyIsNullOrZeroIsNewStrategyForPrimitiveVersionedEntity() {
 
 		IsNewStrategy strategy = factory.getIsNewStrategy(VersionedEntity.class);
-		assertThat(strategy, is(instanceOf(PropertyIsNullOrZeroNumberIsNewStrategy.class)));
+		assertThat(strategy).isInstanceOf(PropertyIsNullOrZeroNumberIsNewStrategy.class);
 
 		Optional<VersionedEntity> entity = Optional.of(new VersionedEntity());
 		assertThat(strategy.isNew(entity)).isTrue();

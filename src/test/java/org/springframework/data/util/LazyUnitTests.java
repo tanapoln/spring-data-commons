@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,41 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.repository.config;
+package org.springframework.data.util;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.w3c.dom.Element;
 
 /**
- * Unit tests for {@link XmlRepositoryConfigurationSource}.
- * 
  * @author Oliver Gierke
  */
 @RunWith(MockitoJUnitRunner.class)
-public class XmlRepositoryConfigurationSourceUnitTests {
+public class LazyUnitTests {
 
-	@Mock Element element;
+	@Mock Supplier<String> supplier;
+	@Mock Supplier<Optional<String>> optionalSupplier;
 
-	/**
-	 * @see DATACMNS-456
-	 */
 	@Test
-	public void translatesCamelCaseAttributeNameIntoXmlEquivalent() {
+	public void invokesSupplierOnFirstAccess() {
 
-		RepositoryConfigurationSource source = mock(XmlRepositoryConfigurationSource.class);
-		ReflectionTestUtils.setField(source, "element", element);
-		when(source.getAttribute(anyString())).thenCallRealMethod();
+		doReturn("foo").when(supplier).get();
 
-		when(element.getAttribute("some-xml-attribute")).thenReturn("value");
+		Lazy<String> lazy = Lazy.of(supplier);
 
-		assertThat(source.getAttribute("someXmlAttribute")).isEqualTo("value");
+		assertThat(lazy.get()).isEqualTo("foo");
+		assertThat(lazy.get()).isEqualTo("foo");
+
+		verify(supplier, times(1)).get();
+	}
+
+	@Test
+	public void createsLazyOptional() {
+
+		doReturn(Optional.empty()).when(optionalSupplier).get();
+
+		assertThat(Lazy.of(optionalSupplier).get()).isEmpty();
 	}
 }

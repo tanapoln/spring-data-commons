@@ -15,8 +15,7 @@
  */
 package org.springframework.data.history;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -52,7 +51,8 @@ public class RevisionsUnitTests {
 
 	@Test
 	public void returnsCorrectLatestRevision() {
-		assertThat(Revisions.of(Arrays.asList(firstRevision, secondRevision)).getLatestRevision(), is(secondRevision));
+		assertThat(Revisions.of(Arrays.asList(firstRevision, secondRevision)).getLatestRevision())
+				.isEqualTo(secondRevision);
 	}
 
 	@Test
@@ -61,17 +61,17 @@ public class RevisionsUnitTests {
 		Revisions<Integer, Object> revisions = Revisions.of(Arrays.asList(firstRevision, secondRevision));
 		Iterator<Revision<Integer, Object>> iterator = revisions.iterator();
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(firstRevision));
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(secondRevision));
-		assertThat(iterator.hasNext(), is(false));
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(firstRevision);
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(secondRevision);
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
 	public void reversedRevisionsStillReturnsCorrectLatestRevision() {
-		assertThat(Revisions.of(Arrays.asList(firstRevision, secondRevision)).reverse().getLatestRevision(),
-				is(secondRevision));
+		assertThat(Revisions.of(Arrays.asList(firstRevision, secondRevision)).reverse().getLatestRevision())
+				.isEqualTo(secondRevision);
 	}
 
 	@Test
@@ -80,11 +80,11 @@ public class RevisionsUnitTests {
 		Revisions<Integer, Object> revisions = Revisions.of(Arrays.asList(firstRevision, secondRevision));
 		Iterator<Revision<Integer, Object>> iterator = revisions.reverse().iterator();
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(secondRevision));
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(firstRevision));
-		assertThat(iterator.hasNext(), is(false));
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(secondRevision);
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(firstRevision);
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
@@ -93,10 +93,10 @@ public class RevisionsUnitTests {
 		Revisions<Integer, Object> revisions = Revisions.of(Arrays.asList(secondRevision, firstRevision));
 		Iterator<Revision<Integer, Object>> iterator = revisions.iterator();
 
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(firstRevision));
-		assertThat(iterator.hasNext(), is(true));
-		assertThat(iterator.next(), is(secondRevision));
-		assertThat(iterator.hasNext(), is(false));
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(firstRevision);
+		assertThat(iterator.hasNext()).isTrue();
+		assertThat(iterator.next()).isEqualTo(secondRevision);
+		assertThat(iterator.hasNext()).isFalse();
 	}
 }

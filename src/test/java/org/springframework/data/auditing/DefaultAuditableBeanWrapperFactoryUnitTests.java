@@ -15,9 +15,7 @@
  */
 package org.springframework.data.auditing;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -78,8 +76,8 @@ public class DefaultAuditableBeanWrapperFactoryUnitTests {
 			it.setCreatedDate(Optional.of(instant));
 			it.setLastModifiedDate(Optional.of(instant));
 
-			assertThat(user.createdDate, is(notNullValue()));
-			assertThat(user.lastModifiedDate, is(notNullValue()));
+			assertThat(user.createdDate).isNotNull();
+			assertThat(user.lastModifiedDate).isNotNull();
 		});
 
 	}

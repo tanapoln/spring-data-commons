@@ -16,12 +16,13 @@
 package org.springframework.data.mapping.model;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Iterator;
+import java.util.Optional;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -39,8 +40,6 @@ import org.springframework.data.util.ClassTypeInformation;
 @RunWith(MockitoJUnitRunner.class)
 public class PersistentEntityParameterValueProviderUnitTests<P extends PersistentProperty<P>> {
 
-	@Rule public ExpectedException exception = ExpectedException.none();
-
 	@Mock PropertyValueProvider<P> propertyValueProvider;
 	@Mock P property;
 
@@ -53,23 +52,25 @@ public class PersistentEntityParameterValueProviderUnitTests<P extends Persisten
 		Object outer = new Outer();
 
 		PersistentEntity<Inner, P> entity = new BasicPersistentEntity<Inner, P>(ClassTypeInformation.from(Inner.class)) {
+
 			@Override
-			public P getPersistentProperty(String name) {
-				return property;
+			public Optional<P> getPersistentProperty(String name) {
+				return Optional.ofNullable(property);
 			}
 		};
+
+		doReturn(Optional.empty()).when(propertyValueProvider).getPropertyValue(any());
 
 		assertThat(entity.getPersistenceConstructor()).hasValueSatisfying(constructor -> {
 
 			Iterator<Parameter<Object, P>> iterator = constructor.getParameters().iterator();
 			ParameterValueProvider<P> provider = new PersistentEntityParameterValueProvider<>(entity, propertyValueProvider,
-					outer);
+					Optional.of(outer));
 
-			assertThat(provider.getParameterValue(iterator.next())).isEqualTo(outer);
-			assertThat(provider.getParameterValue(iterator.next())).isNull();
+			assertThat(provider.getParameterValue(iterator.next())).hasValue(outer);
+			assertThat(provider.getParameterValue(iterator.next())).isNotPresent();
 			assertThat(iterator.hasNext()).isFalse();
 		});
-
 	}
 
 	@Test
@@ -77,15 +78,14 @@ public class PersistentEntityParameterValueProviderUnitTests<P extends Persisten
 
 		PersistentEntity<Entity, P> entity = new BasicPersistentEntity<>(ClassTypeInformation.from(Entity.class));
 		ParameterValueProvider<P> provider = new PersistentEntityParameterValueProvider<>(entity, propertyValueProvider,
-				property);
+				Optional.of(property));
 
 		assertThat(entity.getPersistenceConstructor()).hasValueSatisfying(constructor -> {
 
-			exception.expect(MappingException.class);
-			exception.expectMessage("bar");
-			exception.expectMessage(Entity.class.getName());
-
-			provider.getParameterValue(constructor.getParameters().iterator().next());
+			assertThatExceptionOfType(MappingException.class)//
+					.isThrownBy(() -> provider.getParameterValue(constructor.getParameters().iterator().next()))//
+					.withMessageContaining("bar")//
+					.withMessageContaining(Entity.class.getName());
 		});
 	}
 

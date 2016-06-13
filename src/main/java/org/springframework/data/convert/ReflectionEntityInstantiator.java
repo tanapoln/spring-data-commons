@@ -46,8 +46,9 @@ public enum ReflectionEntityInstantiator implements EntityInstantiator {
 		return entity.getPersistenceConstructor().map(constructor -> {
 
 			List<Object> params = Optional.ofNullable(provider)//
-					.map(p -> constructor.getParameters().stream()//
-							.map(parameter -> p.getParameterValue(parameter)).collect(Collectors.toList()))//
+					.map(it -> constructor.getParameters().stream()//
+							.map(parameter -> it.getParameterValue(parameter).orElse(null))//
+							.collect(Collectors.toList()))//
 					.orElse(Collections.emptyList());
 
 			try {

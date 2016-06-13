@@ -76,9 +76,9 @@ public class MappingContextIsNewStrategyFactory extends IsNewStrategyFactorySupp
 		}
 
 		if (entity.hasVersionProperty()) {
-			return new PropertyIsNullOrZeroNumberIsNewStrategy(entity.getVersionProperty());
+			return new PropertyIsNullOrZeroNumberIsNewStrategy(entity.getVersionProperty().get());
 		} else if (entity.hasIdProperty()) {
-			return new PropertyIsNullIsNewStrategy(entity.getIdProperty());
+			return new PropertyIsNullIsNewStrategy(entity.getIdProperty().get());
 		} else {
 			throw new MappingException(String.format("Cannot determine IsNewStrategy for type %s!", type));
 		}

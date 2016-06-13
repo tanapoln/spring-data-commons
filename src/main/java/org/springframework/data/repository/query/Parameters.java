@@ -28,6 +28,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Streamable;
 import org.springframework.util.Assert;
 
 /**
@@ -35,7 +36,7 @@ import org.springframework.util.Assert;
  * 
  * @author Oliver Gierke
  */
-public abstract class Parameters<S extends Parameters<S, T>, T extends Parameter> implements Iterable<T> {
+public abstract class Parameters<S extends Parameters<S, T>, T extends Parameter> implements Streamable<T> {
 
 	public static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class);
 

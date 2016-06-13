@@ -15,8 +15,7 @@
  */
 package org.springframework.data.repository.core.support;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -47,7 +46,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		TypeDescriptor descriptor = getTypeDescriptorFor("set");
 		List<Entity> source = Collections.singletonList(new Entity());
 
-		assertThat(handler.postProcessInvocationResult(source, descriptor), is(instanceOf(Set.class)));
+		assertThat(handler.postProcessInvocationResult(source, descriptor)).isInstanceOf(Set.class);
 	}
 
 	/**
@@ -57,7 +56,7 @@ public class QueryExecutionResultHandlerUnitTests {
 	public void turnsNullIntoJdk8Optional() throws Exception {
 
 		Object result = handler.postProcessInvocationResult(null, getTypeDescriptorFor("jdk8Optional"));
-		assertThat(result, is((Object) Optional.empty()));
+		assertThat(result).isEqualTo(Optional.empty());
 	}
 
 	/**
@@ -70,10 +69,10 @@ public class QueryExecutionResultHandlerUnitTests {
 		Entity entity = new Entity();
 
 		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("jdk8Optional"));
-		assertThat(result, is(instanceOf(Optional.class)));
+		assertThat(result).isInstanceOf(Optional.class);
 
 		Optional<Entity> optional = (Optional<Entity>) result;
-		assertThat(optional, is(Optional.of(entity)));
+		assertThat(optional).isEqualTo(Optional.of(entity));
 	}
 
 	/**
@@ -83,7 +82,7 @@ public class QueryExecutionResultHandlerUnitTests {
 	public void turnsNullIntoGuavaOptional() throws Exception {
 
 		Object result = handler.postProcessInvocationResult(null, getTypeDescriptorFor("guavaOptional"));
-		assertThat(result, is((Object) com.google.common.base.Optional.absent()));
+		assertThat(result).isEqualTo(com.google.common.base.Optional.absent());
 	}
 
 	/**
@@ -96,10 +95,10 @@ public class QueryExecutionResultHandlerUnitTests {
 		Entity entity = new Entity();
 
 		Object result = handler.postProcessInvocationResult(entity, getTypeDescriptorFor("guavaOptional"));
-		assertThat(result, is(instanceOf(com.google.common.base.Optional.class)));
+		assertThat(result).isInstanceOf(com.google.common.base.Optional.class);
 
 		com.google.common.base.Optional<Entity> optional = (com.google.common.base.Optional<Entity>) result;
-		assertThat(optional, is(com.google.common.base.Optional.of(entity)));
+		assertThat(optional).isEqualTo(com.google.common.base.Optional.of(entity));
 	}
 
 	private static TypeDescriptor getTypeDescriptorFor(String methodName) throws Exception {
