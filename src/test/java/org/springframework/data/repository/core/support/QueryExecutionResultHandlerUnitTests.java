@@ -124,7 +124,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Publisher.class)));
 
 		Mono<Entity> mono = Mono.from((Publisher<Entity>) result);
-		assertThat(mono.get(), is(entity.toBlocking().value()));
+		assertThat(mono.block(), is(entity.toBlocking().value()));
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Mono.class)));
 
 		Mono<Entity> mono = (Mono<Entity>) result;
-		assertThat(mono.get(), is(entity.toBlocking().value()));
+		assertThat(mono.block(), is(entity.toBlocking().value()));
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Flux.class)));
 
 		Flux<Entity> flux = (Flux<Entity>) result;
-		assertThat(flux.next().get(), is(entity.toBlocking().value()));
+		assertThat(flux.next().block(), is(entity.toBlocking().value()));
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Publisher.class)));
 
 		Mono<Entity> mono = Mono.from((Publisher<Entity>) result);
-		assertThat(mono.get(), is(entity.toBlocking().first()));
+		assertThat(mono.block(), is(entity.toBlocking().first()));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Mono.class)));
 
 		Mono<Entity> mono = (Mono<Entity>) result;
-		assertThat(mono.get(), is(entity.toBlocking().first()));
+		assertThat(mono.block(), is(entity.toBlocking().first()));
 	}
 
 	/**
@@ -204,7 +204,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Flux.class)));
 
 		Flux<Entity> flux = (Flux<Entity>) result;
-		assertThat(flux.next().get(), is(entity.toBlocking().first()));
+		assertThat(flux.next().block(), is(entity.toBlocking().first()));
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Single.class)));
 
 		Single<Entity> single = (Single<Entity>) result;
-		assertThat(single.toBlocking().value(), is(entity.get()));
+		assertThat(single.toBlocking().value(), is(entity.block()));
 	}
 
 	/**
@@ -300,7 +300,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Mono.class)));
 
 		Mono mono = (Mono) result;
-		assertThat(mono.get(), is(nullValue()));
+		assertThat(mono.block(), is(nullValue()));
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Mono.class)));
 
 		Mono mono = (Mono) result;
-		mono.get();
+		mono.block();
 		fail("Missing InvalidDataAccessApiUsageException");
 	}
 
@@ -333,7 +333,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Observable.class)));
 
 		Observable<Entity> observable = (Observable<Entity>) result;
-		assertThat(observable.toBlocking().first(), is(entity.get()));
+		assertThat(observable.toBlocking().first(), is(entity.block()));
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Single.class)));
 
 		Single<Entity> single = (Single<Entity>) result;
-		assertThat(single.toBlocking().value(), is(entity.next().get()));
+		assertThat(single.toBlocking().value(), is(entity.next().block()));
 	}
 
 	/**
@@ -365,7 +365,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Observable.class)));
 
 		Observable<Entity> observable = (Observable<Entity>) result;
-		assertThat(observable.toBlocking().first(), is(entity.next().get()));
+		assertThat(observable.toBlocking().first(), is(entity.next().block()));
 	}
 
 	/**
@@ -381,7 +381,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Mono.class)));
 
 		Mono<Entity> mono = (Mono<Entity>) result;
-		assertThat(mono.get(), is(entity.next().get()));
+		assertThat(mono.block(), is(entity.next().block()));
 	}
 
 	/**
@@ -397,7 +397,7 @@ public class QueryExecutionResultHandlerUnitTests {
 		assertThat(result, is(instanceOf(Flux.class)));
 
 		Flux<Entity> flux = (Flux<Entity>) result;
-		assertThat(flux.next().get(), is(entity.get()));
+		assertThat(flux.next().block(), is(entity.block()));
 	}
 
 	private static TypeDescriptor getTypeDescriptorFor(String methodName) throws Exception {
