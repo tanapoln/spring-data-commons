@@ -59,7 +59,7 @@ import org.springframework.util.MultiValueMap;
 @RunWith(MockitoJUnitRunner.class)
 public class ReflectionRepositoryInvokerUnitTests {
 
-	static final Page<Person> EMPTY_PAGE = new PageImpl<Person>(Collections.<Person> emptyList());
+	static final Page<Person> EMPTY_PAGE = new PageImpl<>(Collections.emptyList());
 
 	ConversionService conversionService;
 

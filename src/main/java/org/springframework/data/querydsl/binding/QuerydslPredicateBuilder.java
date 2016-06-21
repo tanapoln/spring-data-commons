@@ -192,7 +192,7 @@ public class QuerydslPredicateBuilder {
 			return Collections.emptyList();
 		}
 
-		Collection<Object> target = new ArrayList<Object>(source.size());
+		Collection<Object> target = new ArrayList<>(source.size());
 
 		for (String value : source) {
 

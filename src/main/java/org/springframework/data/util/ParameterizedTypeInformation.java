@@ -69,7 +69,7 @@ class ParameterizedTypeInformation<T> extends ParentTypeAwareTypeInformation<T> 
 
 		Class<?> rawType = getType();
 
-		Set<Type> supertypes = new HashSet<Type>();
+		Set<Type> supertypes = new HashSet<>();
 		supertypes.add(rawType.getGenericSuperclass());
 		supertypes.addAll(Arrays.asList(rawType.getGenericInterfaces()));
 

@@ -76,7 +76,7 @@ public class ExtensionAwareEvaluationContextProviderUnitTests {
 	@Test
 	public void secondExtensionOverridesFirstOne() {
 
-		List<EvaluationContextExtension> extensions = new ArrayList<EvaluationContextExtension>();
+		List<EvaluationContextExtension> extensions = new ArrayList<>();
 		extensions.add(new DummyExtension("_first", "first"));
 		extensions.add(new DummyExtension("_second", "second"));
 
@@ -91,7 +91,7 @@ public class ExtensionAwareEvaluationContextProviderUnitTests {
 	@Test
 	public void allowsDirectAccessToExtensionViaKey() {
 
-		List<EvaluationContextExtension> extensions = new ArrayList<EvaluationContextExtension>();
+		List<EvaluationContextExtension> extensions = new ArrayList<>();
 		extensions.add(new DummyExtension("_first", "first"));
 		extensions.add(new DummyExtension("_second", "second"));
 

@@ -40,13 +40,13 @@ public class AbstractEntityInformationUnitTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNullDomainClass() throws Exception {
 
-		new DummyEntityInformation<Object>(null);
+		new DummyEntityInformation<>(null);
 	}
 
 	@Test
 	public void considersEntityNewIfGetIdReturnsNull() throws Exception {
 
-		EntityInformation<Object, Serializable> metadata = new DummyEntityInformation<Object>(Object.class);
+		EntityInformation<Object, Serializable> metadata = new DummyEntityInformation<>(Object.class);
 		assertThat(metadata.isNew(null)).isTrue();
 		assertThat(metadata.isNew(new Object())).isFalse();
 	}

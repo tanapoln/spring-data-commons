@@ -111,7 +111,7 @@ public class ClassGeneratingPropertyAccessorFactory implements PersistentPropert
 			return false;
 		}
 
-		final Set<Integer> hashCodes = new HashSet<Integer>();
+		final Set<Integer> hashCodes = new HashSet<>();
 		final AtomicInteger propertyCount = new AtomicInteger();
 
 		entity.doWithProperties(new SimplePropertyHandler() {
@@ -809,7 +809,7 @@ public class ClassGeneratingPropertyAccessorFactory implements PersistentPropert
 
 			int[] hashes = new int[propertyStackMap.size()];
 			Label[] switchJumpLabels = new Label[propertyStackMap.size()];
-			List<PropertyStackAddress> stackmap = new ArrayList<PropertyStackAddress>(propertyStackMap.values());
+			List<PropertyStackAddress> stackmap = new ArrayList<>(propertyStackMap.values());
 			Collections.sort(stackmap);
 
 			for (int i = 0; i < stackmap.size(); i++) {
@@ -1010,7 +1010,7 @@ public class ClassGeneratingPropertyAccessorFactory implements PersistentPropert
 
 			int[] hashes = new int[propertyStackMap.size()];
 			Label[] switchJumpLabels = new Label[propertyStackMap.size()];
-			List<PropertyStackAddress> stackmap = new ArrayList<PropertyStackAddress>(propertyStackMap.values());
+			List<PropertyStackAddress> stackmap = new ArrayList<>(propertyStackMap.values());
 			Collections.sort(stackmap);
 
 			for (int i = 0; i < stackmap.size(); i++) {

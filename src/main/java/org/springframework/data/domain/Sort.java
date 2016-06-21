@@ -79,7 +79,7 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 	 * @param properties must not be {@literal null}, empty or contain {@literal null} or empty strings.
 	 */
 	public Sort(Direction direction, String... properties) {
-		this(direction, properties == null ? new ArrayList<String>() : Arrays.asList(properties));
+		this(direction, properties == null ? new ArrayList<>() : Arrays.asList(properties));
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 			throw new IllegalArgumentException("You have to provide at least one property to sort by!");
 		}
 
-		this.orders = new ArrayList<Order>(properties.size());
+		this.orders = new ArrayList<>(properties.size());
 
 		for (String property : properties) {
 			this.orders.add(new Order(direction, property));
@@ -118,7 +118,7 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 			return this;
 		}
 
-		ArrayList<Order> these = new ArrayList<Order>(this.orders);
+		ArrayList<Order> these = new ArrayList<>(this.orders);
 
 		for (Order order : sort) {
 			these.add(order);

@@ -189,7 +189,7 @@ public abstract class ReturnedType {
 		@Override
 		public List<String> getInputProperties() {
 
-			List<String> properties = new ArrayList<String>();
+			List<String> properties = new ArrayList<>();
 
 			for (PropertyDescriptor descriptor : information.getInputProperties()) {
 				properties.add(descriptor.getName());

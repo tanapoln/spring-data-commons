@@ -243,7 +243,7 @@ public class SortHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	protected List<String> foldIntoExpressions(Sort sort) {
 
-		List<String> expressions = new ArrayList<String>();
+		List<String> expressions = new ArrayList<>();
 		ExpressionBuilder builder = null;
 
 		for (Order order : sort) {
@@ -273,7 +273,7 @@ public class SortHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	protected List<String> legacyFoldExpressions(Sort sort) {
 
-		List<String> expressions = new ArrayList<String>();
+		List<String> expressions = new ArrayList<>();
 		ExpressionBuilder builder = null;
 
 		for (Order order : sort) {
@@ -300,7 +300,7 @@ public class SortHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	class ExpressionBuilder {
 
-		private final List<String> elements = new ArrayList<String>();
+		private final List<String> elements = new ArrayList<>();
 		private final Direction direction;
 
 		/**

@@ -86,11 +86,7 @@ public class AbstractMappingContextIntegrationTests<T extends PersistentProperty
 
 		final DummyMappingContext context = new DummyMappingContext();
 
-		Thread a = new Thread(new Runnable() {
-			public void run() {
-				context.getPersistentEntity(Person.class);
-			}
-		});
+		Thread a = new Thread(() -> context.getPersistentEntity(Person.class));
 
 		Thread b = new Thread(new Runnable() {
 
@@ -98,13 +94,11 @@ public class AbstractMappingContextIntegrationTests<T extends PersistentProperty
 
 				PersistentEntity<Object, T> entity = context.getPersistentEntity(Person.class);
 
-				entity.doWithProperties(new PropertyHandler<T>() {
-					public void doWithPersistentProperty(T persistentProperty) {
-						try {
-							Thread.sleep(250);
-						} catch (InterruptedException e) {
-							throw new RuntimeException(e);
-						}
+				entity.doWithProperties((PropertyHandler<T>) persistentProperty -> {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
 					}
 				});
 			}

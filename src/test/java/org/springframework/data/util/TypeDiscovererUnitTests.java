@@ -47,14 +47,14 @@ public class TypeDiscovererUnitTests {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNullType() {
-		new TypeDiscoverer<Object>(null, null);
+		new TypeDiscoverer<>(null, null);
 	}
 
 	@Test
 	public void isNotEqualIfTypesDiffer() {
 
-		TypeDiscoverer<Object> objectTypeInfo = new TypeDiscoverer<Object>(Object.class, EMPTY_MAP);
-		TypeDiscoverer<String> stringTypeInfo = new TypeDiscoverer<String>(String.class, EMPTY_MAP);
+		TypeDiscoverer<Object> objectTypeInfo = new TypeDiscoverer<>(Object.class, EMPTY_MAP);
+		TypeDiscoverer<String> stringTypeInfo = new TypeDiscoverer<>(String.class, EMPTY_MAP);
 
 		assertThat(objectTypeInfo.equals(stringTypeInfo)).isFalse();
 	}
@@ -64,8 +64,8 @@ public class TypeDiscovererUnitTests {
 
 		assertThat(firstMap.equals(secondMap)).isFalse();
 
-		TypeDiscoverer<Object> first = new TypeDiscoverer<Object>(Object.class, firstMap);
-		TypeDiscoverer<Object> second = new TypeDiscoverer<Object>(Object.class, secondMap);
+		TypeDiscoverer<Object> first = new TypeDiscoverer<>(Object.class, firstMap);
+		TypeDiscoverer<Object> second = new TypeDiscoverer<>(Object.class, secondMap);
 
 		assertThat(first.equals(second)).isFalse();
 	}
@@ -92,7 +92,7 @@ public class TypeDiscovererUnitTests {
 	@Test
 	public void returnsComponentAndValueTypesForMapExtensions() {
 
-		TypeInformation<?> discoverer = new TypeDiscoverer<Object>(CustomMap.class, EMPTY_MAP);
+		TypeInformation<?> discoverer = new TypeDiscoverer<>(CustomMap.class, EMPTY_MAP);
 
 		assertThat(discoverer.getMapValueType().getType()).isEqualTo(Locale.class);
 		assertThat(discoverer.getComponentType().getType()).isEqualTo(String.class);
@@ -101,7 +101,7 @@ public class TypeDiscovererUnitTests {
 	@Test
 	public void returnsComponentTypeForCollectionExtension() {
 
-		TypeDiscoverer<CustomCollection> discoverer = new TypeDiscoverer<CustomCollection>(CustomCollection.class,
+		TypeDiscoverer<CustomCollection> discoverer = new TypeDiscoverer<>(CustomCollection.class,
 				firstMap);
 
 		assertThat(discoverer.getComponentType().getType()).isEqualTo(String.class);
@@ -121,7 +121,7 @@ public class TypeDiscovererUnitTests {
 	@Test
 	public void discoveresConstructorParameterTypesCorrectly() throws NoSuchMethodException, SecurityException {
 
-		TypeDiscoverer<GenericConstructors> discoverer = new TypeDiscoverer<GenericConstructors>(GenericConstructors.class,
+		TypeDiscoverer<GenericConstructors> discoverer = new TypeDiscoverer<>(GenericConstructors.class,
 				firstMap);
 		Constructor<GenericConstructors> constructor = GenericConstructors.class.getConstructor(List.class, Locale.class);
 		List<TypeInformation<?>> types = discoverer.getParameterTypes(constructor);
@@ -135,7 +135,7 @@ public class TypeDiscovererUnitTests {
 	@SuppressWarnings("rawtypes")
 	public void returnsNullForComponentAndValueTypesForRawMaps() {
 
-		TypeDiscoverer<Map> discoverer = new TypeDiscoverer<Map>(Map.class, EMPTY_MAP);
+		TypeDiscoverer<Map> discoverer = new TypeDiscoverer<>(Map.class, EMPTY_MAP);
 
 		assertThat(discoverer.getComponentType()).isNull();
 		assertThat(discoverer.getMapValueType()).isNull();
@@ -148,7 +148,7 @@ public class TypeDiscovererUnitTests {
 	@SuppressWarnings("rawtypes")
 	public void doesNotConsiderTypeImplementingIterableACollection() {
 
-		TypeDiscoverer<Person> discoverer = new TypeDiscoverer<Person>(Person.class, EMPTY_MAP);
+		TypeDiscoverer<Person> discoverer = new TypeDiscoverer<>(Person.class, EMPTY_MAP);
 		TypeInformation reference = from(Address.class);
 
 		TypeInformation<?> addresses = discoverer.getProperty("addresses");

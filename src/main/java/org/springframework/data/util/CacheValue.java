@@ -24,7 +24,7 @@ package org.springframework.data.util;
  */
 public class CacheValue<T> {
 
-	private static final CacheValue<?> ABSENT = new CacheValue<Object>(null);
+	private static final CacheValue<?> ABSENT = new CacheValue<>(null);
 
 	private final T value;
 
@@ -73,7 +73,7 @@ public class CacheValue<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> CacheValue<T> ofNullable(T value) {
-		return value == null ? (CacheValue<T>) ABSENT : new CacheValue<T>(value);
+		return value == null ? (CacheValue<T>) ABSENT : new CacheValue<>(value);
 	}
 
 	/* 

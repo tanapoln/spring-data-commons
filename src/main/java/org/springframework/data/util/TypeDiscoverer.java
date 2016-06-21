@@ -459,7 +459,7 @@ class TypeDiscoverer<S> implements TypeInformation<S> {
 			return this;
 		}
 
-		List<Type> candidates = new ArrayList<Type>();
+		List<Type> candidates = new ArrayList<>();
 
 		Type genericSuperclass = rawType.getGenericSuperclass();
 		if (genericSuperclass != null) {

@@ -33,6 +33,6 @@ public class SamplePersistentProperty extends AnnotationBasedPersistentProperty<
 
 	@Override
 	protected Association<SamplePersistentProperty> createAssociation() {
-		return new Association<SamplePersistentProperty>(this, null);
+		return new Association<>(this, null);
 	}
 }

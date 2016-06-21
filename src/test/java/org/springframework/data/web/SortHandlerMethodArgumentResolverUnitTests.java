@@ -82,7 +82,7 @@ public class SortHandlerMethodArgumentResolverUnitTests extends SortDefaultUnitT
 	public void discoversSimpleSortFromRequest() {
 
 		MethodParameter parameter = getParameterOfMethod("simpleDefault");
-		Sort reference = new Sort("bar", "foo");
+		Sort reference = Sort.by("bar", "foo");
 		NativeWebRequest request = getRequestWithSort(reference);
 
 		assertSupportedAndResolvedTo(request, parameter, reference);
@@ -92,7 +92,7 @@ public class SortHandlerMethodArgumentResolverUnitTests extends SortDefaultUnitT
 	public void discoversComplexSortFromRequest() {
 
 		MethodParameter parameter = getParameterOfMethod("simpleDefault");
-		Sort reference = new Sort("bar", "foo").and(new Sort("fizz", "buzz"));
+		Sort reference = Sort.by("bar", "foo").and(Sort.by("fizz", "buzz"));
 
 		assertSupportedAndResolvedTo(getRequestWithSort(reference), parameter, reference);
 	}
@@ -101,7 +101,7 @@ public class SortHandlerMethodArgumentResolverUnitTests extends SortDefaultUnitT
 	public void discoversQualifiedSortFromRequest() {
 
 		MethodParameter parameter = getParameterOfMethod("qualifiedSort");
-		Sort reference = new Sort("bar", "foo");
+		Sort reference = Sort.by("bar", "foo");
 
 		assertSupportedAndResolvedTo(getRequestWithSort(reference, "qual"), parameter, reference);
 	}
@@ -206,8 +206,8 @@ public class SortHandlerMethodArgumentResolverUnitTests extends SortDefaultUnitT
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("sort", "");
 
-		assertThat(resolveSort(request, getParameterOfMethod("simpleDefault"))).isEqualTo(new Sort("firstname", "lastname"));
-		assertThat(resolveSort(request, getParameterOfMethod("containeredDefault"))).isEqualTo(new Sort("foo", "bar"));
+		assertThat(resolveSort(request, getParameterOfMethod("simpleDefault"))).isEqualTo(Sort.by("firstname", "lastname"));
+		assertThat(resolveSort(request, getParameterOfMethod("containeredDefault"))).isEqualTo(Sort.by("foo", "bar"));
 	}
 
 	private static Sort resolveSort(HttpServletRequest request, MethodParameter parameter) throws Exception {

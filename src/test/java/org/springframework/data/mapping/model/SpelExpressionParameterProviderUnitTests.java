@@ -47,8 +47,7 @@ public class SpelExpressionParameterProviderUnitTests {
 	@Before
 	@SuppressWarnings("unchecked")
 	public void setUp() {
-		provider = new SpELExpressionParameterValueProvider<SamplePersistentProperty>(evaluator, conversionService,
-				delegate);
+		provider = new SpELExpressionParameterValueProvider<>(evaluator, conversionService, delegate);
 
 		parameter = mock(Parameter.class);
 		when(parameter.hasSpelExpression()).thenReturn(true);

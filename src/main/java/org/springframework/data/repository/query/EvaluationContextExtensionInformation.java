@@ -215,8 +215,8 @@ class EvaluationContextExtensionInformation {
 			Assert.notNull(type, "Type must not be null!");
 
 			this.accessors = new HashMap<String, Method>();
-			this.methods = new HashSet<Method>();
-			this.fields = new ArrayList<Field>();
+			this.methods = new HashSet<>();
+			this.fields = new ArrayList<>();
 
 			if (Object.class.equals(type)) {
 				return;

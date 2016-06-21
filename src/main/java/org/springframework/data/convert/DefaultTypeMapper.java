@@ -80,7 +80,7 @@ public class DefaultTypeMapper<S> implements TypeMapper<S> {
 		Assert.notNull(accessor);
 		Assert.notNull(additionalMappers);
 
-		List<TypeInformationMapper> mappers = new ArrayList<TypeInformationMapper>(additionalMappers.size() + 1);
+		List<TypeInformationMapper> mappers = new ArrayList<>(additionalMappers.size() + 1);
 		if (mappingContext != null) {
 			mappers.add(new MappingContextTypeInformationMapper(mappingContext));
 		}

@@ -115,7 +115,7 @@ public class ResultProcessorUnitTests {
 
 		ResultProcessor information = getProcessor("findAllProjection");
 
-		List<Sample> source = new ArrayList<Sample>(Arrays.asList(new Sample("Dave", "Matthews")));
+		List<Sample> source = new ArrayList<>(Arrays.asList(new Sample("Dave", "Matthews")));
 		List<SampleProjection> result = information.processResult(source);
 
 		assertThat(result).hasSize(1);
@@ -130,7 +130,7 @@ public class ResultProcessorUnitTests {
 
 		ResultProcessor information = getProcessor("findPageProjection", Pageable.class);
 
-		Page<Sample> source = new PageImpl<Sample>(Arrays.asList(new Sample("Dave", "Matthews")));
+		Page<Sample> source = new PageImpl<>(Arrays.asList(new Sample("Dave", "Matthews")));
 		Page<SampleProjection> result = information.processResult(source);
 
 		assertThat(result.getContent()).hasSize(1);
@@ -196,7 +196,7 @@ public class ResultProcessorUnitTests {
 	@Test
 	public void supportsSlicesAsReturnWrapper() throws Exception {
 
-		Slice<Sample> slice = new SliceImpl<Sample>(Collections.singletonList(new Sample("Dave", "Matthews")));
+		Slice<Sample> slice = new SliceImpl<>(Collections.singletonList(new Sample("Dave", "Matthews")));
 
 		Object result = getProcessor("findSliceProjection", Pageable.class).processResult(slice);
 

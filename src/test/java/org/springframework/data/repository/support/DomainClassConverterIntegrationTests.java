@@ -69,7 +69,7 @@ public class DomainClassConverterIntegrationTests {
 		doReturn(Person.class).when(information).getDomainType();
 		doReturn(Serializable.class).when(information).getIdType();
 
-		EntityInformation<Person, Serializable> entityInformation = new DummyEntityInformation<Person>(Person.class);
+		EntityInformation<Person, Serializable> entityInformation = new DummyEntityInformation<>(Person.class);
 
 		when(factory.getObject()).thenReturn(repository);
 		when(factory.getObjectType()).thenReturn(PersonRepository.class);

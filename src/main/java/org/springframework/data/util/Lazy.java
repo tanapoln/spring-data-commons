@@ -32,7 +32,7 @@ public class Lazy<T> {
 	private Optional<T> value;
 
 	public static <T> Lazy<T> of(Supplier<T> supplier) {
-		return new Lazy<T>(supplier);
+		return new Lazy<>(supplier);
 	}
 
 	/**

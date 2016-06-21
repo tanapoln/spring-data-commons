@@ -103,8 +103,8 @@ public class SpringDataJaxbUnitTests {
 		PageWrapper wrapper = new PageWrapper();
 		Content content = new Content();
 		content.name = "Foo";
-		wrapper.page = new PageImpl<Content>(Arrays.asList(content));
-		wrapper.pageWithLinks = new PageImpl<Content>(Arrays.asList(content));
+		wrapper.page = new PageImpl<>(Arrays.asList(content));
+		wrapper.pageWithLinks = new PageImpl<>(Arrays.asList(content));
 
 		marshaller.marshal(wrapper, new StringWriter());
 	}

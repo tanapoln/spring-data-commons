@@ -36,7 +36,7 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 
 	private static final long serialVersionUID = 867755909294344406L;
 
-	private final List<T> content = new ArrayList<T>();
+	private final List<T> content = new ArrayList<>();
 	private final Optional<? extends Pageable> pageable;
 
 	/**

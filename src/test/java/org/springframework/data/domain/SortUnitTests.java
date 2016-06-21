@@ -39,7 +39,7 @@ public class SortUnitTests {
 	@Test
 	public void appliesDefaultForOrder() throws Exception {
 
-		assertThat(new Sort("foo").iterator().next().getDirection()).isEqualTo(Sort.DEFAULT_DIRECTION);
+		assertThat(Sort.by("foo").iterator().next().getDirection()).isEqualTo(Sort.DEFAULT_DIRECTION);
 		assertThat(new Sort((Direction) null, "foo").iterator().next().getDirection()).isEqualTo(Sort.DEFAULT_DIRECTION);
 	}
 
@@ -90,14 +90,14 @@ public class SortUnitTests {
 	@Test
 	public void allowsCombiningSorts() {
 
-		Sort sort = new Sort("foo").and(new Sort("bar"));
+		Sort sort = Sort.by("foo").and(Sort.by("bar"));
 		assertThat(sort).containsExactly(new Sort.Order("foo"), new Sort.Order("bar"));
 	}
 
 	@Test
 	public void handlesAdditionalNullSort() {
 
-		Sort sort = new Sort("foo").and(null);
+		Sort sort = Sort.by("foo").and(null);
 		assertThat(sort).containsExactly(new Sort.Order("foo"));
 	}
 

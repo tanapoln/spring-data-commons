@@ -232,7 +232,7 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 
 		boolean pageAndSizeGiven = StringUtils.hasText(pageString) && StringUtils.hasText(pageSizeString);
 
-		return defaultOrFallback.filter(it -> !pageAndSizeGiven).map(it -> {
+		return defaultOrFallback.filter(it -> pageAndSizeGiven).map(it -> {
 
 			int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE, true)
 					: it.getPageNumber();

@@ -72,7 +72,7 @@ public class SliceImpl<T> extends Chunk<T> {
 	 */
 	@Override
 	public <U> Slice<U> map(Converter<? super T, ? extends U> converter) {
-		return new SliceImpl<U>(getConvertedContent(converter), pageable, hasNext);
+		return new SliceImpl<>(getConvertedContent(converter), pageable, hasNext);
 	}
 
 	/*

@@ -58,7 +58,7 @@ class MethodParameters {
 	public MethodParameters(Method method, Optional<AnnotationAttribute> namingAnnotation) {
 
 		Assert.notNull(method);
-		this.parameters = new ArrayList<MethodParameter>();
+		this.parameters = new ArrayList<>();
 
 		for (int i = 0; i < method.getParameterTypes().length; i++) {
 

@@ -55,7 +55,7 @@ public class DataCmns511Tests {
 
 	static abstract class AbstractUser<USER extends AbstractUser<USER, ROLE>, ROLE extends AbstractRole<USER, ROLE>> {
 
-		Set<ROLE> roles = new HashSet<ROLE>();
+		Set<ROLE> roles = new HashSet<>();
 	}
 
 	static abstract class AuditingEntity<USER extends AbstractUser<USER, ?>> {

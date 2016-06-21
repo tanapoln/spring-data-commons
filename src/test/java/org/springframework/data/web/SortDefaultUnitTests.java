@@ -56,7 +56,7 @@ public abstract class SortDefaultUnitTests {
 		assertSortStringParsedInto(new Sort(new Order(ASC, "username")), SORT_1);
 		assertSortStringParsedInto(new Sort(new Order(ASC, "username"), //
 				new Order(DESC, "lastname"), new Order(DESC, "firstname")), SORT_2);
-		assertSortStringParsedInto(new Sort("firstname", "lastname"), SORT_3);
+		assertSortStringParsedInto(Sort.by("firstname", "lastname"), SORT_3);
 	}
 
 	private static void assertSortStringParsedInto(Sort expected, String... source) {
@@ -114,7 +114,7 @@ public abstract class SortDefaultUnitTests {
 	public void discoversContaineredDefault() throws Exception {
 
 		MethodParameter parameter = getParameterOfMethod("containeredDefault");
-		Sort reference = new Sort("foo", "bar");
+		Sort reference = Sort.by("foo", "bar");
 
 		assertSupportedAndResolvedTo(parameter, reference);
 	}

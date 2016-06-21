@@ -133,7 +133,7 @@ public abstract class AbstractMappingContext<E extends MutablePersistentEntity<?
 
 		try {
 			read.lock();
-			return Collections.unmodifiableSet(new HashSet<E>(persistentEntities.values()));
+			return Collections.unmodifiableSet(new HashSet<>(persistentEntities.values()));
 		} finally {
 			read.unlock();
 		}
@@ -533,7 +533,7 @@ public abstract class AbstractMappingContext<E extends MutablePersistentEntity<?
 
 		static {
 
-			Set<PropertyMatch> matches = new HashSet<PropertyMatch>();
+			Set<PropertyMatch> matches = new HashSet<>();
 			matches.add(new PropertyMatch("class", null));
 			matches.add(new PropertyMatch("this\\$.*", null));
 			matches.add(new PropertyMatch("metaClass", "groovy.lang.MetaClass"));

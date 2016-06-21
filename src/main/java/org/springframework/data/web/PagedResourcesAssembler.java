@@ -88,7 +88,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 	 */
 	@Override
 	public PagedResources<Resource<T>> toResource(Page<T> entity) {
-		return toResource(entity, new SimplePagedResourceAssembler<T>());
+		return toResource(entity, new SimplePagedResourceAssembler<>());
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 	 * @return
 	 */
 	public PagedResources<Resource<T>> toResource(Page<T> page, Link selfLink) {
-		return toResource(page, new SimplePagedResourceAssembler<T>(), selfLink);
+		return toResource(page, new SimplePagedResourceAssembler<>(), selfLink);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 		EmbeddedWrapper wrapper = wrappers.emptyCollectionOf(type);
 		List<EmbeddedWrapper> embedded = Collections.singletonList(wrapper);
 
-		return addPaginationLinks(new PagedResources<EmbeddedWrapper>(embedded, metadata), page, link);
+		return addPaginationLinks(new PagedResources<>(embedded, metadata), page, link);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 		Assert.notNull(metadata, "PageMetadata must not be null!");
 		Assert.notNull(page, "Page must not be null!");
 
-		return new PagedResources<R>(resources, metadata);
+		return new PagedResources<>(resources, metadata);
 	}
 
 	private <S, R extends ResourceSupport> PagedResources<R> createResource(Page<S> page,
@@ -195,7 +195,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 		Assert.notNull(page, "Page must not be null!");
 		Assert.notNull(assembler, "ResourceAssembler must not be null!");
 
-		List<R> resources = new ArrayList<R>(page.getNumberOfElements());
+		List<R> resources = new ArrayList<>(page.getNumberOfElements());
 
 		for (S element : page) {
 			resources.add(assembler.toResource(element));
@@ -295,7 +295,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 
 		@Override
 		public Resource<T> toResource(T entity) {
-			return new Resource<T>(entity);
+			return new Resource<>(entity);
 		}
 	}
 }

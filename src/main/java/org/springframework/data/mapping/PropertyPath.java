@@ -221,7 +221,7 @@ public class PropertyPath implements Streamable<PropertyPath> {
 		Assert.hasText(source, "Source must not be null or empty!");
 		Assert.notNull(type, "TypeInformation must not be null or empty!");
 
-		List<String> iteratorSource = new ArrayList<String>();
+		List<String> iteratorSource = new ArrayList<>();
 		Matcher matcher = SPLITTER.matcher("_" + source);
 
 		while (matcher.find()) {
@@ -231,7 +231,7 @@ public class PropertyPath implements Streamable<PropertyPath> {
 		Iterator<String> parts = iteratorSource.iterator();
 
 		PropertyPath result = null;
-		Stack<PropertyPath> current = new Stack<PropertyPath>();
+		Stack<PropertyPath> current = new Stack<>();
 
 		while (parts.hasNext()) {
 			if (result == null) {
@@ -298,7 +298,7 @@ public class PropertyPath implements Streamable<PropertyPath> {
 				base.get(base.size() - 1).next = current;
 			}
 
-			List<PropertyPath> newBase = new ArrayList<PropertyPath>(base);
+			List<PropertyPath> newBase = new ArrayList<>(base);
 			newBase.add(current);
 
 			if (StringUtils.hasText(addTail)) {

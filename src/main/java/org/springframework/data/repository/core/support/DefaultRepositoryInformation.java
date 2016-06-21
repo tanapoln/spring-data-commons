@@ -158,7 +158,7 @@ class DefaultRepositoryInformation implements RepositoryInformation {
 	@Override
 	public Streamable<Method> getQueryMethods() {
 
-		Set<Method> result = new HashSet<Method>();
+		Set<Method> result = new HashSet<>();
 
 		for (Method method : getRepositoryInterface().getMethods()) {
 			method = ClassUtils.getMostSpecificMethod(method, getRepositoryInterface());

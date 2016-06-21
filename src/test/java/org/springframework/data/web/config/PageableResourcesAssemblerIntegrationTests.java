@@ -106,7 +106,7 @@ public class PageableResourcesAssemblerIntegrationTests {
 		@RequestMapping("/persons")
 		PagedResources<Resource<Person>> sample(Pageable pageable) {
 
-			Page<Person> page = new PageImpl<Person>(Arrays.asList(new Person()), Optional.of(pageable),
+			Page<Person> page = new PageImpl<>(Arrays.asList(new Person()), Optional.of(pageable),
 					pageable.getOffset() + pageable.getPageSize() + 1);
 
 			return assembler.toResource(page);

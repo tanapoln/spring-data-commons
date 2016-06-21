@@ -60,7 +60,7 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 * @param content must not be {@literal null}.
 	 */
 	public PageImpl(List<T> content) {
-		this(content, null, null == content ? 0 : content.size());
+		this(content, Optional.empty(), null == content ? 0 : content.size());
 	}
 
 	/*
@@ -105,7 +105,7 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 */
 	@Override
 	public <U> Page<U> map(Converter<? super T, ? extends U> converter) {
-		return new PageImpl<U>(getConvertedContent(converter), pageable, total);
+		return new PageImpl<>(getConvertedContent(converter), pageable, total);
 	}
 
 	/*

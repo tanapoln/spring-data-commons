@@ -85,7 +85,7 @@ public class Jackson2ResourceReader implements ResourceReader {
 		if (node.isArray()) {
 
 			Iterator<JsonNode> elements = node.elements();
-			List<Object> result = new ArrayList<Object>();
+			List<Object> result = new ArrayList<>();
 
 			while (elements.hasNext()) {
 				JsonNode element = elements.next();

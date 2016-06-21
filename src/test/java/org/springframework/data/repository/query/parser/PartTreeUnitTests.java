@@ -781,7 +781,7 @@ public class PartTreeUnitTests {
 
 	private static <T> Collection<T> toCollection(Iterable<T> iterable) {
 
-		List<T> result = new ArrayList<T>();
+		List<T> result = new ArrayList<>();
 		for (T element : iterable) {
 			result.add(element);
 		}

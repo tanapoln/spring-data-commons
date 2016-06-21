@@ -54,11 +54,11 @@ public class ParameterizedTypeUnitTests {
 	@Test
 	public void considersTypeInformationsWithDifferingParentsNotEqual() {
 
-		TypeDiscoverer<String> stringParent = new TypeDiscoverer<String>(String.class, EMPTY_MAP);
-		TypeDiscoverer<Object> objectParent = new TypeDiscoverer<Object>(Object.class, EMPTY_MAP);
+		TypeDiscoverer<String> stringParent = new TypeDiscoverer<>(String.class, EMPTY_MAP);
+		TypeDiscoverer<Object> objectParent = new TypeDiscoverer<>(Object.class, EMPTY_MAP);
 
-		ParameterizedTypeInformation<Object> first = new ParameterizedTypeInformation<Object>(one, stringParent, EMPTY_MAP);
-		ParameterizedTypeInformation<Object> second = new ParameterizedTypeInformation<Object>(one, objectParent,
+		ParameterizedTypeInformation<Object> first = new ParameterizedTypeInformation<>(one, stringParent, EMPTY_MAP);
+		ParameterizedTypeInformation<Object> second = new ParameterizedTypeInformation<>(one, objectParent,
 				EMPTY_MAP);
 
 		assertThat(first).isNotEqualTo(second);
@@ -67,10 +67,10 @@ public class ParameterizedTypeUnitTests {
 	@Test
 	public void considersTypeInformationsWithSameParentsNotEqual() {
 
-		TypeDiscoverer<String> stringParent = new TypeDiscoverer<String>(String.class, EMPTY_MAP);
+		TypeDiscoverer<String> stringParent = new TypeDiscoverer<>(String.class, EMPTY_MAP);
 
-		ParameterizedTypeInformation<Object> first = new ParameterizedTypeInformation<Object>(one, stringParent, EMPTY_MAP);
-		ParameterizedTypeInformation<Object> second = new ParameterizedTypeInformation<Object>(one, stringParent,
+		ParameterizedTypeInformation<Object> first = new ParameterizedTypeInformation<>(one, stringParent, EMPTY_MAP);
+		ParameterizedTypeInformation<Object> second = new ParameterizedTypeInformation<>(one, stringParent,
 				EMPTY_MAP);
 
 		assertThat(first.equals(second)).isTrue();

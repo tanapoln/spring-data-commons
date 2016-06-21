@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.springframework.core.convert.converter.Converter;
 
 /**
  * Unit test for {@link PageImpl}.
@@ -36,10 +35,10 @@ public class PageImplUnitTests {
 	@Test
 	public void assertEqualsForSimpleSetup() throws Exception {
 
-		PageImpl<String> page = new PageImpl<String>(Arrays.asList("Foo"));
+		PageImpl<String> page = new PageImpl<>(Arrays.asList("Foo"));
 
 		assertEqualsAndHashcode(page, page);
-		assertEqualsAndHashcode(page, new PageImpl<String>(Arrays.asList("Foo")));
+		assertEqualsAndHashcode(page, new PageImpl<>(Arrays.asList("Foo")));
 	}
 
 	@Test
@@ -48,29 +47,29 @@ public class PageImplUnitTests {
 		Pageable pageable = PageRequest.of(0, 10);
 		List<String> content = Arrays.asList("Foo");
 
-		PageImpl<String> page = new PageImpl<String>(content, Optional.of(pageable), 100);
+		PageImpl<String> page = new PageImpl<>(content, Optional.of(pageable), 100);
 
 		assertEqualsAndHashcode(page, page);
-		assertEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(pageable), 100));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(pageable), 90));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(PageRequest.of(1, 10)), 100));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(PageRequest.of(0, 15)), 100));
+		assertEqualsAndHashcode(page, new PageImpl<>(content, Optional.of(pageable), 100));
+		assertNotEqualsAndHashcode(page, new PageImpl<>(content, Optional.of(pageable), 90));
+		assertNotEqualsAndHashcode(page, new PageImpl<>(content, Optional.of(PageRequest.of(1, 10)), 100));
+		assertNotEqualsAndHashcode(page, new PageImpl<>(content, Optional.of(PageRequest.of(0, 15)), 100));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void preventsNullContentForSimpleSetup() throws Exception {
-		new PageImpl<Object>(null);
+		new PageImpl<>(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void preventsNullContentForAdvancedSetup() throws Exception {
-		new PageImpl<Object>(null, null, 0);
+		new PageImpl<>(null, null, 0);
 	}
 
 	@Test
 	public void returnsNextPageable() {
 
-		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), Optional.of(PageRequest.of(0, 1)), 10);
+		Page<Object> page = new PageImpl<>(Arrays.asList(new Object()), Optional.of(PageRequest.of(0, 1)), 10);
 
 		assertThat(page.isFirst()).isTrue();
 		assertThat(page.hasPrevious()).isFalse();
@@ -84,7 +83,7 @@ public class PageImplUnitTests {
 	@Test
 	public void returnsPreviousPageable() {
 
-		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), Optional.of(PageRequest.of(1, 1)), 2);
+		Page<Object> page = new PageImpl<>(Arrays.asList(new Object()), Optional.of(PageRequest.of(1, 1)), 2);
 
 		assertThat(page.isFirst()).isFalse();
 		assertThat(page.hasPrevious()).isTrue();
@@ -99,7 +98,7 @@ public class PageImplUnitTests {
 	public void createsPageForEmptyContentCorrectly() {
 
 		List<String> list = Collections.emptyList();
-		Page<String> page = new PageImpl<String>(list);
+		Page<String> page = new PageImpl<>(list);
 
 		assertThat(page.getContent()).isEqualTo(list);
 		assertThat(page.getNumber()).isEqualTo(0);
@@ -121,7 +120,7 @@ public class PageImplUnitTests {
 	@Test
 	public void returnsCorrectTotalPages() {
 
-		Page<String> page = new PageImpl<String>(Arrays.asList("a"));
+		Page<String> page = new PageImpl<>(Arrays.asList("a"));
 
 		assertThat(page.getTotalPages()).isEqualTo(1);
 		assertThat(page.hasNext()).isFalse();
@@ -135,12 +134,7 @@ public class PageImplUnitTests {
 	public void transformsPageCorrectly() {
 
 		Page<Integer> transformed = new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(0, 2)), 10)
-				.map(new Converter<String, Integer>() {
-					@Override
-					public Integer convert(String source) {
-						return source.length();
-					}
-				});
+				.map(source -> source.length());
 
 		assertThat(transformed.getContent()).hasSize(2);
 		assertThat(transformed.getContent()).contains(3, 3);
