@@ -117,8 +117,8 @@ public class CrudRepositoryInvokerUnitTests {
 
 		Method method = CrudRepository.class.getMethod("findAll");
 
-		getInvokerFor(orderRepository, expectInvocationOf(method)).invokeFindAll((Pageable) null);
-		getInvokerFor(orderRepository, expectInvocationOf(method)).invokeFindAll((Sort) null);
+		getInvokerFor(orderRepository, expectInvocationOf(method)).invokePagedFindAll(Optional.empty());
+		getInvokerFor(orderRepository, expectInvocationOf(method)).invokeSortedFindAll(Optional.empty());
 	}
 
 	/**
@@ -131,9 +131,10 @@ public class CrudRepositoryInvokerUnitTests {
 
 		Method findAllWithSort = CrudWithFindAllWithSort.class.getMethod("findAll", Sort.class);
 
-		getInvokerFor(repository, expectInvocationOf(findAllWithSort)).invokeFindAll((Pageable) null);
-		getInvokerFor(repository, expectInvocationOf(findAllWithSort)).invokeFindAll(new PageRequest(0, 10));
-		getInvokerFor(repository, expectInvocationOf(findAllWithSort)).invokeFindAll((Sort) null);
+		getInvokerFor(repository, expectInvocationOf(findAllWithSort)).invokePagedFindAll(Optional.empty());
+		getInvokerFor(repository, expectInvocationOf(findAllWithSort))
+				.invokePagedFindAll(Optional.of(PageRequest.of(0, 10)));
+		getInvokerFor(repository, expectInvocationOf(findAllWithSort)).invokeSortedFindAll(Optional.empty());
 	}
 
 	/**
@@ -146,8 +147,9 @@ public class CrudRepositoryInvokerUnitTests {
 
 		Method findAllWithPageable = CrudWithFindAllWithPageable.class.getMethod("findAll", Pageable.class);
 
-		getInvokerFor(repository, expectInvocationOf(findAllWithPageable)).invokeFindAll((Pageable) null);
-		getInvokerFor(repository, expectInvocationOf(findAllWithPageable)).invokeFindAll(new PageRequest(0, 10));
+		getInvokerFor(repository, expectInvocationOf(findAllWithPageable)).invokePagedFindAll(Optional.empty());
+		getInvokerFor(repository, expectInvocationOf(findAllWithPageable))
+				.invokePagedFindAll(Optional.of(PageRequest.of(0, 10)));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

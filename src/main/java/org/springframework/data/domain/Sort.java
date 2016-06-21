@@ -65,7 +65,9 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 	 * Creates a new {@link Sort} instance. Order defaults to {@value Direction#ASC}.
 	 * 
 	 * @param properties must not be {@literal null} or contain {@literal null} or empty strings
+	 * @deprecated use {@link Sort#by(String...)}
 	 */
+	@Deprecated
 	public Sort(String... properties) {
 		this(DEFAULT_DIRECTION, properties);
 	}
@@ -97,6 +99,10 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 		for (String property : properties) {
 			this.orders.add(new Order(direction, property));
 		}
+	}
+
+	public static Sort by(String... properties) {
+		return new Sort(properties);
 	}
 
 	/**

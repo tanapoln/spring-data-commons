@@ -16,6 +16,7 @@
 package org.springframework.data.domain.jaxb;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -40,7 +41,7 @@ class PageableAdapter extends XmlAdapter<PageRequestDto, Pageable> {
 	@Override
 	public PageRequestDto marshal(Pageable request) {
 
-		SortDto sortDto = SortAdapter.INSTANCE.marshal(request.getSort());
+		SortDto sortDto = SortAdapter.INSTANCE.marshal(request.getSort().orElse(null));
 
 		PageRequestDto dto = new PageRequestDto();
 		dto.orders = sortDto == null ? Collections.<OrderDto> emptyList() : sortDto.orders;
@@ -58,13 +59,13 @@ class PageableAdapter extends XmlAdapter<PageRequestDto, Pageable> {
 	public Pageable unmarshal(PageRequestDto v) {
 
 		if (v.orders.isEmpty()) {
-			return new PageRequest(v.page, v.size);
+			return PageRequest.of(v.page, v.size);
 		}
 
 		SortDto sortDto = new SortDto();
 		sortDto.orders = v.orders;
 		Sort sort = SortAdapter.INSTANCE.unmarshal(sortDto);
 
-		return new PageRequest(v.page, v.size, sort);
+		return PageRequest.of(v.page, v.size, Optional.ofNullable(sort));
 	}
 }

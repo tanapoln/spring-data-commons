@@ -16,6 +16,7 @@
 package org.springframework.data.repository.query;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,7 +33,7 @@ public interface ParameterAccessor extends Iterable<Object> {
 	 * 
 	 * @return
 	 */
-	Pageable getPageable();
+	Optional<Pageable> getPageable();
 
 	/**
 	 * Returns the sort instance to be used for query creation. Will use a {@link Sort} parameter if available or the
@@ -40,7 +41,7 @@ public interface ParameterAccessor extends Iterable<Object> {
 	 * 
 	 * @return
 	 */
-	Sort getSort();
+	Optional<Sort> getSort();
 
 	/**
 	 * Returns the dynamic projection type to be used when executing the query or {@literal null} if none is defined.
@@ -48,7 +49,7 @@ public interface ParameterAccessor extends Iterable<Object> {
 	 * @return
 	 * @since 1.12
 	 */
-	Class<?> getDynamicProjection();
+	Optional<Class<?>> getDynamicProjection();
 
 	/**
 	 * Returns the bindable value with the given index. Bindable means, that {@link Pageable} and {@link Sort} values are

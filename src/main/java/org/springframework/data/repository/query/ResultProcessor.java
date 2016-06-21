@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.core.CollectionFactory;
@@ -46,8 +47,7 @@ public class ResultProcessor {
 	private final QueryMethod method;
 	private final ProjectingConverter converter;
 	private final ProjectionFactory factory;
-
-	private ReturnedType type;
+	private final ReturnedType type;
 
 	/**
 	 * Creates a new {@link ResultProcessor} from the given {@link QueryMethod} and {@link ProjectionFactory}.
@@ -84,15 +84,11 @@ public class ResultProcessor {
 	 * @param accessor can be {@literal null}.
 	 * @return
 	 */
-	public ResultProcessor withDynamicProjection(ParameterAccessor accessor) {
+	public ResultProcessor withDynamicProjection(Optional<ParameterAccessor> accessor) {
 
-		if (accessor == null) {
-			return this;
-		}
-
-		Class<?> projectionType = accessor.getDynamicProjection();
-
-		return projectionType == null ? this : new ResultProcessor(method, factory, projectionType);
+		return accessor.flatMap(it -> it.getDynamicProjection())//
+				.map(it -> new ResultProcessor(method, factory, it))//
+				.orElse(this);
 	}
 
 	/**

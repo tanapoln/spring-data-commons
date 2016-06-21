@@ -16,6 +16,7 @@
 package org.springframework.data.repository.query.parser;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
@@ -68,9 +69,7 @@ public abstract class AbstractQueryCreator<T, S> {
 	 * @return
 	 */
 	public T createQuery() {
-
-		Sort dynamicSort = parameters != null ? parameters.getSort() : null;
-		return createQuery(dynamicSort);
+		return createQuery(parameters.getSort());
 	}
 
 	/**
@@ -80,12 +79,12 @@ public abstract class AbstractQueryCreator<T, S> {
 	 * @param dynamicSort
 	 * @return
 	 */
-	public T createQuery(Sort dynamicSort) {
+	public T createQuery(Optional<Sort> dynamicSort) {
 
-		Sort staticSort = tree.getSort();
-		Sort sort = staticSort != null ? staticSort.and(dynamicSort) : dynamicSort;
-
-		return complete(createCriteria(tree), sort);
+		return complete(createCriteria(tree),
+				tree.getSort()//
+						.map(it -> dynamicSort.map(other -> it.and(other)))//
+						.orElse(dynamicSort));
 	}
 
 	/**
@@ -150,5 +149,5 @@ public abstract class AbstractQueryCreator<T, S> {
 	 * @param sort might be {@literal null}.
 	 * @return
 	 */
-	protected abstract T complete(S criteria, Sort sort);
+	protected abstract T complete(S criteria, Optional<Sort> sort);
 }

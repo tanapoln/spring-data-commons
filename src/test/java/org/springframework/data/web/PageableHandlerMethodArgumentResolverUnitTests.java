@@ -56,7 +56,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 		request.addParameter("page", "0");
 		request.addParameter("size", "200");
 
-		assertSupportedAndResult(supportedMethodParameter, new PageRequest(0, 100), request);
+		assertSupportedAndResult(supportedMethodParameter, PageRequest.of(0, 100), request);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -88,7 +88,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 		request.addParameter("foo_page", "2");
 		request.addParameter("foo_size", "10");
 
-		assertSupportedAndResult(parameter, new PageRequest(2, 10), request);
+		assertSupportedAndResult(parameter, PageRequest.of(2, 10), request);
 	}
 
 	/**

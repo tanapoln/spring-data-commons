@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.data.repository.support.RepositoryInvocationTestUtils.*;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -48,8 +49,8 @@ public class PaginginAndSortingRepositoryInvokerUnitTests {
 		Repository repository = mock(Repository.class);
 		Method method = PagingAndSortingRepository.class.getMethod("findAll", Pageable.class);
 
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll(new PageRequest(0, 10));
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll((Pageable) null);
+		getInvokerFor(repository, expectInvocationOf(method)).invokePagedFindAll(Optional.of(PageRequest.of(0, 10)));
+		getInvokerFor(repository, expectInvocationOf(method)).invokePagedFindAll(Optional.empty());
 	}
 
 	/**
@@ -61,8 +62,8 @@ public class PaginginAndSortingRepositoryInvokerUnitTests {
 		Repository repository = mock(Repository.class);
 		Method method = PagingAndSortingRepository.class.getMethod("findAll", Sort.class);
 
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll(new Sort("foo"));
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll((Sort) null);
+		getInvokerFor(repository, expectInvocationOf(method)).invokeSortedFindAll(Optional.of(Sort.by("foo")));
+		getInvokerFor(repository, expectInvocationOf(method)).invokeSortedFindAll(Optional.empty());
 	}
 
 	/**
@@ -74,8 +75,8 @@ public class PaginginAndSortingRepositoryInvokerUnitTests {
 		RepositoryWithRedeclaredFindAllWithPageable repository = mock(RepositoryWithRedeclaredFindAllWithPageable.class);
 		Method method = RepositoryWithRedeclaredFindAllWithPageable.class.getMethod("findAll", Pageable.class);
 
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll(new PageRequest(0, 10));
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll((Pageable) null);
+		getInvokerFor(repository, expectInvocationOf(method)).invokePagedFindAll(Optional.of(PageRequest.of(0, 10)));
+		getInvokerFor(repository, expectInvocationOf(method)).invokePagedFindAll(Optional.empty());
 	}
 
 	/**
@@ -87,8 +88,8 @@ public class PaginginAndSortingRepositoryInvokerUnitTests {
 		RepositoryWithRedeclaredFindAllWithSort repository = mock(RepositoryWithRedeclaredFindAllWithSort.class);
 		Method method = RepositoryWithRedeclaredFindAllWithSort.class.getMethod("findAll", Sort.class);
 
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll(new Sort("foo"));
-		getInvokerFor(repository, expectInvocationOf(method)).invokeFindAll((Sort) null);
+		getInvokerFor(repository, expectInvocationOf(method)).invokeSortedFindAll(Optional.of(Sort.by("foo")));
+		getInvokerFor(repository, expectInvocationOf(method)).invokeSortedFindAll(Optional.empty());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

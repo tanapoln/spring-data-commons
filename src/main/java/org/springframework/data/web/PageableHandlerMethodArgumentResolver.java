@@ -18,6 +18,7 @@ package org.springframework.data.web;
 import static org.springframework.data.web.SpringDataAnnotationUtils.*;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
@@ -49,9 +50,9 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 	private static final String DEFAULT_PREFIX = "";
 	private static final String DEFAULT_QUALIFIER_DELIMITER = "_";
 	private static final int DEFAULT_MAX_PAGE_SIZE = 2000;
-	static final Pageable DEFAULT_PAGE_REQUEST = new PageRequest(0, 20);
+	static final Pageable DEFAULT_PAGE_REQUEST = PageRequest.of(0, 20);
 
-	private Pageable fallbackPageable = DEFAULT_PAGE_REQUEST;
+	private Optional<Pageable> fallbackPageable = Optional.of(DEFAULT_PAGE_REQUEST);
 	private SortHandlerMethodArgumentResolver sortResolver;
 	private String pageParameterName = DEFAULT_PAGE_PARAMETER;
 	private String sizeParameterName = DEFAULT_SIZE_PARAMETER;
@@ -81,14 +82,14 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 	 * {@link PageableDefaults} (the latter only supported in legacy mode) can be found at the method parameter to be
 	 * resolved.
 	 * <p>
-	 * If you set this to {@literal null}, be aware that you controller methods will get {@literal null} handed into them
-	 * in case no {@link Pageable} data can be found in the request. Note, that doing so will require you supply bot the
-	 * page <em>and</em> the size parameter with the requests as there will be no default for any of the parameters
-	 * available.
+	 * If you set this to {@literal Optional#empty()}, be aware that you controller methods will get {@literal null}
+	 * handed into them in case no {@link Pageable} data can be found in the request. Note, that doing so will require you
+	 * supply bot the page <em>and</em> the size parameter with the requests as there will be no default for any of the
+	 * parameters available.
 	 * 
 	 * @param fallbackPageable the {@link Pageable} to be used as general fallback.
 	 */
-	public void setFallbackPageable(Pageable fallbackPageable) {
+	public void setFallbackPageable(Optional<Pageable> fallbackPageable) {
 		this.fallbackPageable = fallbackPageable;
 	}
 
@@ -224,33 +225,31 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 
 		assertPageableUniqueness(methodParameter);
 
-		Pageable defaultOrFallback = getDefaultFromAnnotationOrFallback(methodParameter);
+		Optional<Pageable> defaultOrFallback = getDefaultFromAnnotationOrFallback(methodParameter);
 
 		String pageString = webRequest.getParameter(getParameterNameToUse(pageParameterName, methodParameter));
 		String pageSizeString = webRequest.getParameter(getParameterNameToUse(sizeParameterName, methodParameter));
 
 		boolean pageAndSizeGiven = StringUtils.hasText(pageString) && StringUtils.hasText(pageSizeString);
 
-		if (!pageAndSizeGiven && defaultOrFallback == null) {
-			return null;
-		}
+		return defaultOrFallback.filter(it -> !pageAndSizeGiven).map(it -> {
 
-		int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE, true)
-				: defaultOrFallback.getPageNumber();
-		int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize, false)
-				: defaultOrFallback.getPageSize();
+			int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE, true)
+					: it.getPageNumber();
+			int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize, false)
+					: it.getPageSize();
 
-		// Limit lower bound
-		pageSize = pageSize < 1 ? defaultOrFallback.getPageSize() : pageSize;
-		// Limit upper bound
-		pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
+			// Limit lower bound
+			pageSize = pageSize < 1 ? it.getPageSize() : pageSize;
+			// Limit upper bound
+			pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
 
-		Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
+			Optional<Sort> sort = Optional
+					.ofNullable(sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory));
 
-		// Default if necessary and default configured
-		sort = sort == null && defaultOrFallback != null ? defaultOrFallback.getSort() : sort;
+			return PageRequest.of(page, pageSize, sort.isPresent() ? sort : it.getSort());
 
-		return new PageRequest(page, pageSize, sort);
+		}).orElse(null);
 	}
 
 	/**
@@ -273,10 +272,10 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 		return builder.append(source).toString();
 	}
 
-	private Pageable getDefaultFromAnnotationOrFallback(MethodParameter methodParameter) {
+	private Optional<Pageable> getDefaultFromAnnotationOrFallback(MethodParameter methodParameter) {
 
 		if (methodParameter.hasParameterAnnotation(PageableDefault.class)) {
-			return getDefaultPageRequestFrom(methodParameter);
+			return Optional.of(getDefaultPageRequestFrom(methodParameter));
 		}
 
 		return fallbackPageable;
@@ -295,10 +294,10 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 		}
 
 		if (defaults.sort().length == 0) {
-			return new PageRequest(defaultPageNumber, defaultPageSize);
+			return PageRequest.of(defaultPageNumber, defaultPageSize);
 		}
 
-		return new PageRequest(defaultPageNumber, defaultPageSize, defaults.direction(), defaults.sort());
+		return PageRequest.of(defaultPageNumber, defaultPageSize, defaults.direction(), defaults.sort());
 	}
 
 	/**

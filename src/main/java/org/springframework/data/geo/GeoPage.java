@@ -15,6 +15,8 @@
  */
 package org.springframework.data.geo;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +54,7 @@ public class GeoPage<T> extends PageImpl<GeoResult<T>> {
 	 * @param pageable must not be {@literal null}.
 	 * @param total
 	 */
-	public GeoPage(GeoResults<T> results, Pageable pageable, long total) {
+	public GeoPage(GeoResults<T> results, Optional<? extends Pageable> pageable, long total) {
 
 		super(results.getContent(), pageable, total);
 

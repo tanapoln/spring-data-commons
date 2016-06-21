@@ -66,7 +66,7 @@ public class OrderBySourceUnitTests {
 	public void defaultsSortOrderToAscendingSort() {
 
 		OrderBySource source = new OrderBySource("lastname");
-		assertThat(source.toSort()).hasValue(new Sort("lastname"));
+		assertThat(source.toSort()).hasValue(Sort.by("lastname"));
 	}
 
 	@SuppressWarnings("unused")

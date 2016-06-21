@@ -17,6 +17,7 @@ package org.springframework.data.repository.support;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -64,7 +65,7 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * @return the result of the invocation of the find-all method.
 	 * @throws IllegalStateException if the repository does not expose a find-all-method.
 	 */
-	Iterable<Object> invokeFindAll(Pageable pageable);
+	Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable);
 
 	/**
 	 * Invokes the find-all method of the underlying repository using the method taking a {@link Sort} as parameter if
@@ -76,14 +77,14 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * @return the result of the invocation of the find-all method.
 	 * @throws IllegalStateException if the repository does not expose a find-all-method.
 	 */
-	Iterable<Object> invokeFindAll(Sort sort);
+	Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort);
 
 	/**
 	 * Invokes the method equivalent to {@link org.springframework.data.repository.CrudRepository#delete(Serializable)}.
 	 * The given id is assumed to be of a type convertable into the actual identifier type of the backing repository.
 	 * 
-	 * @param id must not be {@literal null}. throws {@link IllegalStateException} if the repository does not expose a
-	 *          delete-method.
+	 * @param id must not be {@literal null}.
+	 * @throws {@link IllegalStateException} if the repository does not expose a delete-method.
 	 */
 	void invokeDelete(Serializable id);
 
@@ -93,11 +94,11 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * 
 	 * @param method must not be {@literal null}.
 	 * @param parameters must not be {@literal null}.
-	 * @param pageable can be {@literal null}.
-	 * @param sort can be {@literal null}.
+	 * @param pageable must not be {@literal null}.
+	 * @param sort must not be {@literal null}.
 	 * @return the result of the invoked query method.
 	 * @since 1.11
 	 */
-	Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters, Pageable pageable,
-			Sort sort);
+	Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters,
+			Optional<Pageable> pageable, Optional<Sort> sort);
 }

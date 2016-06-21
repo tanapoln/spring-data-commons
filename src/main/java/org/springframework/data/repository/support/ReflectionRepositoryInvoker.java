@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionException;
@@ -81,21 +82,22 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		return methods.hasFindAllMethod();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeFindAll(org.springframework.data.domain.Sort)
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokeSortedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokeFindAll(Sort sort) {
-		return invokeFindAllReflectively(sort);
+	public Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort) {
+		return invokeSortedFindAllReflectively(sort);
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeFindAll(org.springframework.data.domain.Pageable)
+	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokePagedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokeFindAll(Pageable pageable) {
-		return invokeFindAllReflectively(pageable);
+	public Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable) {
+		return invokePagedFindAllReflectively(pageable);
 	}
 
 	/* 
@@ -172,8 +174,8 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeQueryMethod(java.lang.reflect.Method, java.util.Map, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort)
 	 */
 	@Override
-	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters, Pageable pageable,
-			Sort sort) {
+	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters,
+			Optional<Pageable> pageable, Optional<Sort> sort) {
 
 		Assert.notNull(method, "Method must not be null!");
 		Assert.notNull(parameters, "Parameters must not be null!");
@@ -184,16 +186,17 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	}
 
 	private Object[] prepareParameters(Method method, MultiValueMap<String, ? extends Object> rawParameters,
-			Pageable pageable, Sort sort) {
+			Optional<Pageable> pageable, Optional<Sort> sort) {
 
-		List<MethodParameter> parameters = new MethodParameters(method, PARAM_ANNOTATION).getParameters();
+		List<MethodParameter> parameters = new MethodParameters(method, Optional.of(PARAM_ANNOTATION)).getParameters();
 
 		if (parameters.isEmpty()) {
 			return new Object[0];
 		}
 
 		Object[] result = new Object[parameters.size()];
-		Sort sortToUse = pageable == null ? sort : pageable.getSort();
+		Sort sortToUse = pageable.flatMap(it -> it.getSort()).orElse(null);
+		Pageable pageableToUse = pageable.orElse(null);
 
 		for (int i = 0; i < result.length; i++) {
 
@@ -201,7 +204,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 			Class<?> targetType = param.getParameterType();
 
 			if (Pageable.class.isAssignableFrom(targetType)) {
-				result[i] = pageable;
+				result[i] = pageableToUse;
 			} else if (Sort.class.isAssignableFrom(targetType)) {
 				result[i] = sortToUse;
 			} else {
@@ -254,7 +257,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		return conversionService.convert(id, idType);
 	}
 
-	protected Iterable<Object> invokeFindAllReflectively(Pageable pageable) {
+	protected Iterable<Object> invokePagedFindAllReflectively(Optional<? extends Pageable> pageable) {
 
 		Assert.state(hasFindAllMethod(), "Repository doesn't have a find-all-method declared!");
 
@@ -266,15 +269,13 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		}
 
 		if (Pageable.class.isAssignableFrom(types[0])) {
-			return invoke(method, pageable);
+			return invoke(method, pageable.orElse(null));
 		}
 
-		Sort sort = pageable == null ? null : pageable.getSort();
-
-		return invokeFindAll(sort);
+		return invokeSortedFindAll(pageable.flatMap(it -> it.getSort()));
 	}
 
-	protected Iterable<Object> invokeFindAllReflectively(Sort sort) {
+	protected Iterable<Object> invokeSortedFindAllReflectively(Optional<? extends Sort> sort) {
 
 		Assert.state(hasFindAllMethod(), "Repository doesn't have a find-all-method declared!");
 

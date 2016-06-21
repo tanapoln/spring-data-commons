@@ -107,8 +107,8 @@ public class PartTree implements Streamable<OrPart> {
 	 * 
 	 * @return the sort
 	 */
-	public Sort getSort() {
-		return predicate.getOrderBySource().flatMap(OrderBySource::toSort).orElse(null);
+	public Optional<Sort> getSort() {
+		return predicate.getOrderBySource().flatMap(OrderBySource::toSort);
 	}
 
 	/**

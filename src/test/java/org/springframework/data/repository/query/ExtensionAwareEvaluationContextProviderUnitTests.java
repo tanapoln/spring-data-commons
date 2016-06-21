@@ -142,7 +142,7 @@ public class ExtensionAwareEvaluationContextProviderUnitTests {
 	public void exposesPageableParameter() throws Exception {
 
 		this.method = SampleRepo.class.getMethod("findByFirstname", String.class, Pageable.class);
-		PageRequest pageable = new PageRequest(2, 3, new Sort(Direction.DESC, "lastname"));
+		PageRequest pageable = PageRequest.of(2, 3, new Sort(Direction.DESC, "lastname"));
 
 		assertThat(evaluateExpression("#pageable.offset", new Object[] { "test", pageable })).isEqualTo(6);
 		assertThat(evaluateExpression("#pageable.pageSize", new Object[] { "test", pageable })).isEqualTo(3);

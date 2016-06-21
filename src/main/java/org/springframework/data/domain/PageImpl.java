@@ -16,6 +16,7 @@
 package org.springframework.data.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.core.convert.converter.Converter;
 
@@ -30,7 +31,7 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	private static final long serialVersionUID = 867755909294344406L;
 
 	private final long total;
-	private final Pageable pageable;
+	private final Optional<? extends Pageable> pageable;
 
 	/**
 	 * Constructor of {@code PageImpl}.
@@ -40,13 +41,16 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 * @param total the total amount of items available. The total might be adapted considering the length of the content
 	 *          given, if it is going to be the content of the last page. This is in place to mitigate inconsistencies
 	 */
-	public PageImpl(List<T> content, Pageable pageable, long total) {
+	public PageImpl(List<T> content, Optional<? extends Pageable> pageable, long total) {
 
 		super(content, pageable);
 
 		this.pageable = pageable;
-		this.total = !content.isEmpty() && pageable != null && pageable.getOffset() + pageable.getPageSize() > total
-				? pageable.getOffset() + content.size() : total;
+
+		this.total = pageable.filter(it -> !content.isEmpty())//
+				.filter(it -> it.getOffset() + it.getPageSize() > total)//
+				.map(it -> it.getOffset() + content.size())//
+				.orElse(total);
 	}
 
 	/**
@@ -100,8 +104,8 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 * @see org.springframework.data.domain.Slice#transform(org.springframework.core.convert.converter.Converter)
 	 */
 	@Override
-	public <S> Page<S> map(Converter<? super T, ? extends S> converter) {
-		return new PageImpl<S>(getConvertedContent(converter), pageable, total);
+	public <U> Page<U> map(Converter<? super T, ? extends U> converter) {
+		return new PageImpl<U>(getConvertedContent(converter), pageable, total);
 	}
 
 	/*

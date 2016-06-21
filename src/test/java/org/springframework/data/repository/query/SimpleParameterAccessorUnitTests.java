@@ -81,7 +81,7 @@ public class SimpleParameterAccessorUnitTests {
 	@Test
 	public void returnsSortIfAvailable() {
 
-		Sort sort = new Sort("foo");
+		Sort sort = Sort.by("foo");
 		ParameterAccessor accessor = new ParametersParameterAccessor(sortParameters, new Object[] { "test", sort });
 		assertThat(accessor.getSort()).isEqualTo(sort);
 		assertThat(accessor.getPageable()).isNull();
@@ -90,7 +90,7 @@ public class SimpleParameterAccessorUnitTests {
 	@Test
 	public void returnsPageableIfAvailable() {
 
-		Pageable pageable = new PageRequest(0, 10);
+		Pageable pageable = PageRequest.of(0, 10);
 		ParameterAccessor accessor = new ParametersParameterAccessor(pageableParameters, new Object[] { "test", pageable });
 		assertThat(accessor.getPageable()).isEqualTo(pageable);
 		assertThat(accessor.getSort()).isNull();
@@ -99,8 +99,8 @@ public class SimpleParameterAccessorUnitTests {
 	@Test
 	public void returnsSortFromPageableIfAvailable() throws Exception {
 
-		Sort sort = new Sort("foo");
-		Pageable pageable = new PageRequest(0, 10, sort);
+		Sort sort = Sort.by("foo");
+		Pageable pageable = PageRequest.of(0, 10, sort);
 		ParameterAccessor accessor = new ParametersParameterAccessor(pageableParameters, new Object[] { "test", pageable });
 		assertThat(accessor.getPageable()).isEqualTo(pageable);
 		assertThat(accessor.getSort()).isEqualTo(sort);

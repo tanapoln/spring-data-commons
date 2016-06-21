@@ -21,6 +21,7 @@ import static org.springframework.data.domain.UnitTestUtils.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.springframework.core.convert.converter.Converter;
@@ -44,16 +45,16 @@ public class PageImplUnitTests {
 	@Test
 	public void assertEqualsForComplexSetup() throws Exception {
 
-		Pageable pageable = new PageRequest(0, 10);
+		Pageable pageable = PageRequest.of(0, 10);
 		List<String> content = Arrays.asList("Foo");
 
-		PageImpl<String> page = new PageImpl<String>(content, pageable, 100);
+		PageImpl<String> page = new PageImpl<String>(content, Optional.of(pageable), 100);
 
 		assertEqualsAndHashcode(page, page);
-		assertEqualsAndHashcode(page, new PageImpl<String>(content, pageable, 100));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, pageable, 90));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, new PageRequest(1, 10), 100));
-		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, new PageRequest(0, 15), 100));
+		assertEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(pageable), 100));
+		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(pageable), 90));
+		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(PageRequest.of(1, 10)), 100));
+		assertNotEqualsAndHashcode(page, new PageImpl<String>(content, Optional.of(PageRequest.of(0, 15)), 100));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -69,7 +70,7 @@ public class PageImplUnitTests {
 	@Test
 	public void returnsNextPageable() {
 
-		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), new PageRequest(0, 1), 10);
+		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), Optional.of(PageRequest.of(0, 1)), 10);
 
 		assertThat(page.isFirst()).isTrue();
 		assertThat(page.hasPrevious()).isFalse();
@@ -77,17 +78,17 @@ public class PageImplUnitTests {
 
 		assertThat(page.isLast()).isFalse();
 		assertThat(page.hasNext()).isTrue();
-		assertThat(page.nextPageable()).isEqualTo((Pageable) new PageRequest(1, 1));
+		assertThat(page.nextPageable()).isEqualTo((Pageable) PageRequest.of(1, 1));
 	}
 
 	@Test
 	public void returnsPreviousPageable() {
 
-		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), new PageRequest(1, 1), 2);
+		Page<Object> page = new PageImpl<Object>(Arrays.asList(new Object()), Optional.of(PageRequest.of(1, 1)), 2);
 
 		assertThat(page.isFirst()).isFalse();
 		assertThat(page.hasPrevious()).isTrue();
-		assertThat(page.previousPageable()).isEqualTo((Pageable) new PageRequest(0, 1));
+		assertThat(page.previousPageable()).isEqualTo((Pageable) PageRequest.of(0, 1));
 
 		assertThat(page.isLast()).isTrue();
 		assertThat(page.hasNext()).isFalse();
@@ -133,7 +134,7 @@ public class PageImplUnitTests {
 	@Test
 	public void transformsPageCorrectly() {
 
-		Page<Integer> transformed = new PageImpl<String>(Arrays.asList("foo", "bar"), new PageRequest(0, 2), 10)
+		Page<Integer> transformed = new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(0, 2)), 10)
 				.map(new Converter<String, Integer>() {
 					@Override
 					public Integer convert(String source) {
@@ -150,7 +151,7 @@ public class PageImplUnitTests {
 	 */
 	@Test
 	public void adaptsTotalForLastPageOnIntermediateDeletion() {
-		assertThat(new PageImpl<String>(Arrays.asList("foo", "bar"), new PageRequest(0, 5), 3).getTotalElements())
+		assertThat(new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(0, 5)), 3).getTotalElements())
 				.isEqualTo(2L);
 	}
 
@@ -159,7 +160,7 @@ public class PageImplUnitTests {
 	 */
 	@Test
 	public void adaptsTotalForLastPageOnIntermediateInsertion() {
-		assertThat(new PageImpl<String>(Arrays.asList("foo", "bar"), new PageRequest(0, 5), 1).getTotalElements())
+		assertThat(new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(0, 5)), 1).getTotalElements())
 				.isEqualTo(2L);
 	}
 
@@ -168,7 +169,7 @@ public class PageImplUnitTests {
 	 */
 	@Test
 	public void adaptsTotalForLastPageOnIntermediateDeletionOnLastPate() {
-		assertThat(new PageImpl<String>(Arrays.asList("foo", "bar"), new PageRequest(1, 10), 13).getTotalElements())
+		assertThat(new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(1, 10)), 13).getTotalElements())
 				.isEqualTo(12L);
 	}
 
@@ -177,7 +178,7 @@ public class PageImplUnitTests {
 	 */
 	@Test
 	public void adaptsTotalForLastPageOnIntermediateInsertionOnLastPate() {
-		assertThat(new PageImpl<String>(Arrays.asList("foo", "bar"), new PageRequest(1, 10), 11).getTotalElements())
+		assertThat(new PageImpl<>(Arrays.asList("foo", "bar"), Optional.of(PageRequest.of(1, 10)), 11).getTotalElements())
 				.isEqualTo(12L);
 	}
 
@@ -187,7 +188,8 @@ public class PageImplUnitTests {
 	@Test
 	public void doesNotAdapttotalIfPageIsEmpty() {
 
-		assertThat(new PageImpl<String>(Collections.<String> emptyList(), new PageRequest(1, 10), 0).getTotalElements())
-				.isEqualTo(0L);
+		assertThat(
+				new PageImpl<>(Collections.<String> emptyList(), Optional.of(PageRequest.of(1, 10)), 0).getTotalElements())
+						.isEqualTo(0L);
 	}
 }

@@ -131,10 +131,10 @@ public class RepositoryFactorySupportUnitTests {
 	public void createsRepositoryInstanceWithCustomIntermediateRepository() {
 
 		CustomRepository repository = factory.getRepository(CustomRepository.class);
-		Pageable pageable = new PageRequest(0, 10);
+		Pageable pageable = PageRequest.of(0, 10);
 		repository.findAll(pageable);
 
-		verify(backingRepo, times(1)).findAll(pageable);
+		verify(backingRepo, times(1)).findAllPaged(Optional.of(pageable));
 	}
 
 	@Test

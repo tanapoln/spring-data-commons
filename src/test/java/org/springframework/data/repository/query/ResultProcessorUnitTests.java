@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -160,11 +161,11 @@ public class ResultProcessorUnitTests {
 
 		ResultProcessor factory = getProcessor("findOneDynamic", Class.class);
 		assertThat(factory.withDynamicProjection(null)).isEqualTo(factory);
-		assertThat(factory.withDynamicProjection(accessor)).isEqualTo(factory);
+		assertThat(factory.withDynamicProjection(Optional.of(accessor))).isEqualTo(factory);
 
 		doReturn(SampleProjection.class).when(accessor).getDynamicProjection();
 
-		ResultProcessor processor = factory.withDynamicProjection(accessor);
+		ResultProcessor processor = factory.withDynamicProjection(Optional.of(accessor));
 		assertThat(processor.getReturnedType().getReturnedType()).isEqualTo(SampleProjection.class);
 	}
 

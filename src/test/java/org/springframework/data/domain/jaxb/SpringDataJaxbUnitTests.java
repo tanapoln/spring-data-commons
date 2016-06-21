@@ -57,7 +57,7 @@ public class SpringDataJaxbUnitTests {
 	Unmarshaller unmarshaller;
 
 	Sort sort = new Sort(Direction.ASC, "firstname", "lastname");
-	Pageable pageable = new PageRequest(2, 15, sort);
+	Pageable pageable = PageRequest.of(2, 15, sort);
 	Resource resource = new ClassPathResource("pageable.xml", this.getClass());
 	Resource schemaFile = new ClassPathResource("spring-data-jaxb.xsd", this.getClass());
 
@@ -81,7 +81,7 @@ public class SpringDataJaxbUnitTests {
 		Wrapper wrapper = new Wrapper();
 		wrapper.pageable = pageable;
 		wrapper.sort = sort;
-		wrapper.pageableWithoutSort = new PageRequest(10, 20);
+		wrapper.pageableWithoutSort = PageRequest.of(10, 20);
 		marshaller.marshal(wrapper, writer);
 
 		assertThat(new Diff(reference, writer.toString()).similar()).isTrue();

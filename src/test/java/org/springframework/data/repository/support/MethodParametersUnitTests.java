@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +36,7 @@ public class MethodParametersUnitTests {
 	public void prefersAnnotatedParameterOverDiscovered() throws Exception {
 
 		Method method = Sample.class.getMethod("method", String.class, String.class, Object.class);
-		MethodParameters parameters = new MethodParameters(method, new AnnotationAttribute(Qualifier.class));
+		MethodParameters parameters = new MethodParameters(method, Optional.of(new AnnotationAttribute(Qualifier.class)));
 
 		assertThat(parameters.getParameter("param")).isNotNull();
 		assertThat(parameters.getParameter("foo")).isNotNull();

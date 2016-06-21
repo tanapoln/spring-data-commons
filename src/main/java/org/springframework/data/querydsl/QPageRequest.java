@@ -15,8 +15,11 @@
  */
 package org.springframework.data.querydsl;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.AbstractPageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.querydsl.core.types.OrderSpecifier;
 
@@ -29,7 +32,7 @@ public class QPageRequest extends AbstractPageRequest {
 
 	private static final long serialVersionUID = 7529171950267879273L;
 
-	private final QSort sort;
+	private final Optional<QSort> sort;
 
 	/**
 	 * Creates a new {@link QPageRequest}. Pages are zero indexed, thus providing 0 for {@code page} will return the first
@@ -39,7 +42,7 @@ public class QPageRequest extends AbstractPageRequest {
 	 * @param size
 	 */
 	public QPageRequest(int page, int size) {
-		this(page, size, (QSort) null);
+		this(page, size, Optional.empty());
 	}
 
 	/**
@@ -50,7 +53,7 @@ public class QPageRequest extends AbstractPageRequest {
 	 * @param orderSpecifiers must not be {@literal null} or empty;
 	 */
 	public QPageRequest(int page, int size, OrderSpecifier<?>... orderSpecifiers) {
-		this(page, size, new QSort(orderSpecifiers));
+		this(page, size, Optional.of(new QSort(orderSpecifiers)));
 	}
 
 	/**
@@ -60,7 +63,7 @@ public class QPageRequest extends AbstractPageRequest {
 	 * @param size
 	 * @param sort
 	 */
-	public QPageRequest(int page, int size, QSort sort) {
+	public QPageRequest(int page, int size, Optional<QSort> sort) {
 		super(page, size);
 
 		this.sort = sort;
@@ -71,8 +74,8 @@ public class QPageRequest extends AbstractPageRequest {
 	 * @see org.springframework.data.domain.Pageable#getSort()
 	 */
 	@Override
-	public QSort getSort() {
-		return sort;
+	public Optional<Sort> getSort() {
+		return sort.map(it -> it);
 	}
 
 	/* 
@@ -81,7 +84,7 @@ public class QPageRequest extends AbstractPageRequest {
 	 */
 	@Override
 	public Pageable next() {
-		return new QPageRequest(getPageNumber() + 1, getPageSize(), getSort());
+		return new QPageRequest(getPageNumber() + 1, getPageSize(), sort);
 	}
 
 	/* 
@@ -90,7 +93,7 @@ public class QPageRequest extends AbstractPageRequest {
 	 */
 	@Override
 	public Pageable previous() {
-		return new QPageRequest(getPageNumber() - 1, getPageSize(), getSort());
+		return new QPageRequest(getPageNumber() - 1, getPageSize(), sort);
 	}
 
 	/* 
@@ -99,6 +102,6 @@ public class QPageRequest extends AbstractPageRequest {
 	 */
 	@Override
 	public Pageable first() {
-		return new QPageRequest(0, getPageSize(), getSort());
+		return new QPageRequest(0, getPageSize(), sort);
 	}
 }

@@ -15,6 +15,8 @@
  */
 package org.springframework.data.domain;
 
+import java.util.Optional;
+
 /**
  * Abstract interface for pagination information.
  * 
@@ -41,14 +43,14 @@ public interface Pageable {
 	 * 
 	 * @return the offset to be taken
 	 */
-	int getOffset();
+	long getOffset();
 
 	/**
 	 * Returns the sorting parameters.
 	 * 
 	 * @return
 	 */
-	Sort getSort();
+	Optional<Sort> getSort();
 
 	/**
 	 * Returns the {@link Pageable} requesting the next {@link Page}.

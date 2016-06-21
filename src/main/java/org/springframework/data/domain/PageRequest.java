@@ -15,6 +15,8 @@
  */
 package org.springframework.data.domain;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Sort.Direction;
 
 /**
@@ -27,7 +29,7 @@ public class PageRequest extends AbstractPageRequest {
 
 	private static final long serialVersionUID = -4541509938956089562L;
 
-	private final Sort sort;
+	private final Optional<Sort> sort;
 
 	/**
 	 * Creates a new {@link PageRequest}. Pages are zero indexed, thus providing 0 for {@code page} will return the first
@@ -35,9 +37,11 @@ public class PageRequest extends AbstractPageRequest {
 	 * 
 	 * @param page zero-based page index.
 	 * @param size the size of the page to be returned.
+	 * @deprecated use {@link #of(int, int)} instead.
 	 */
+	@Deprecated
 	public PageRequest(int page, int size) {
-		this(page, size, null);
+		this(page, size, Optional.empty());
 	}
 
 	/**
@@ -47,9 +51,11 @@ public class PageRequest extends AbstractPageRequest {
 	 * @param size the size of the page to be returned.
 	 * @param direction the direction of the {@link Sort} to be specified, can be {@literal null}.
 	 * @param properties the properties to sort by, must not be {@literal null} or empty.
+	 * @deprecated use {@link #of(int, int, Direction, String...)} instead.
 	 */
+	@Deprecated
 	public PageRequest(int page, int size, Direction direction, String... properties) {
-		this(page, size, new Sort(direction, properties));
+		this(page, size, Optional.of(new Sort(direction, properties)));
 	}
 
 	/**
@@ -58,17 +64,35 @@ public class PageRequest extends AbstractPageRequest {
 	 * @param page zero-based page index.
 	 * @param size the size of the page to be returned.
 	 * @param sort can be {@literal null}.
+	 * @deprecated use {@link #of(int, int, Optional)} instead.
 	 */
-	public PageRequest(int page, int size, Sort sort) {
+	@Deprecated
+	public PageRequest(int page, int size, Optional<? extends Sort> sort) {
 		super(page, size);
-		this.sort = sort;
+		this.sort = sort.map(it -> it);
+	}
+
+	public static PageRequest of(int page, int site) {
+		return new PageRequest(page, site, Optional.empty());
+	}
+
+	public static PageRequest of(int page, int site, Sort sort) {
+		return of(page, site, Optional.of(sort));
+	}
+
+	public static PageRequest of(int page, int site, Optional<Sort> sort) {
+		return new PageRequest(page, site, sort);
+	}
+
+	public static PageRequest of(int page, int size, Direction direction, String... properties) {
+		return new PageRequest(page, size, Optional.of(new Sort(direction, properties)));
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.domain.Pageable#getSort()
 	 */
-	public Sort getSort() {
+	public Optional<Sort> getSort() {
 		return sort;
 	}
 
@@ -113,9 +137,7 @@ public class PageRequest extends AbstractPageRequest {
 
 		PageRequest that = (PageRequest) obj;
 
-		boolean sortEqual = this.sort == null ? that.sort == null : this.sort.equals(that.sort);
-
-		return super.equals(that) && sortEqual;
+		return super.equals(that) && this.sort.equals(that.sort);
 	}
 
 	/*
