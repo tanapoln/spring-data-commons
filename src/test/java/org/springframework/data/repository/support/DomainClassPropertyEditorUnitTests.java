@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.beans.PropertyEditor;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class DomainClassPropertyEditorUnitTests {
 	public void convertsPlainIdTypeCorrectly() throws Exception {
 
 		User user = new User(1);
-		when(information.getId(user)).thenReturn(user.getId());
+		when(information.getId(user)).thenReturn(Optional.of(user.getId()));
 		when(invoker.invokeFindOne(1)).thenReturn(user);
 
 		editor.setAsText("1");
@@ -67,7 +68,7 @@ public class DomainClassPropertyEditorUnitTests {
 
 		User user = new User(1);
 		editor.setValue(user);
-		when(information.getId(user)).thenReturn(user.getId());
+		when(information.getId(user)).thenReturn(Optional.of(user.getId()));
 		assertThat(editor.getAsText()).isEqualTo("1");
 	}
 

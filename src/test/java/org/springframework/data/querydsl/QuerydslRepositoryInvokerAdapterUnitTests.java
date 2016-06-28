@@ -19,7 +19,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,11 +57,11 @@ public class QuerydslRepositoryInvokerAdapterUnitTests {
 	@Test
 	public void forwardsFindAllToExecutorWithPredicate() {
 
-		Optional<Sort> sort = Optional.of(Sort.by("firstname"));
-		adapter.invokeSortedFindAll(sort);
+		Sort sort = Sort.by("firstname");
+		adapter.invokeFindAll(sort);
 
-		verify(executor, times(1)).findAllSorted(predicate, sort);
-		verify(delegate, times(0)).invokeSortedFindAll(sort);
+		verify(executor, times(1)).findAll(predicate, sort);
+		verify(delegate, times(0)).invokeFindAll(sort);
 	}
 
 	/**
@@ -71,11 +70,11 @@ public class QuerydslRepositoryInvokerAdapterUnitTests {
 	@Test
 	public void forwardsFindAllWithPageableToExecutorWithPredicate() {
 
-		Optional<PageRequest> pageable = Optional.of(PageRequest.of(0, 10));
-		adapter.invokePagedFindAll(pageable);
+		PageRequest pageable = PageRequest.of(0, 10);
+		adapter.invokeFindAll(pageable);
 
-		verify(executor, times(1)).findAllPaged(predicate, pageable);
-		verify(delegate, times(0)).invokePagedFindAll(pageable);
+		verify(executor, times(1)).findAll(predicate, pageable);
+		verify(delegate, times(0)).invokeFindAll(pageable);
 	}
 
 	/**

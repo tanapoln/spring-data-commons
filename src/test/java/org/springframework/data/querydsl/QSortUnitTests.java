@@ -45,14 +45,6 @@ public class QSortUnitTests {
 	 * @see DATACMNS-402
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowIfNoOrderSpecifiersAreGiven() {
-		new QSort();
-	}
-
-	/**
-	 * @see DATACMNS-402
-	 */
-	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowIfNullIsGiven() {
 		new QSort((List<OrderSpecifier<?>>) null);
 	}

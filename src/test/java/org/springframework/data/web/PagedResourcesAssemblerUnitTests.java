@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,8 +50,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class PagedResourcesAssemblerUnitTests {
 
 	static final Pageable PAGEABLE = PageRequest.of(0, 20);
-	static final Page<Person> EMPTY_PAGE = new PageImpl<>(Collections.<Person> emptyList(), Optional.of(PAGEABLE),
-			0);
+	static final Page<Person> EMPTY_PAGE = new PageImpl<>(Collections.emptyList(), PAGEABLE, 0);
 
 	HateoasPageableHandlerMethodArgumentResolver resolver = new HateoasPageableHandlerMethodArgumentResolver();
 	PagedResourcesAssembler<Person> assembler = new PagedResourcesAssembler<>(resolver, null);
@@ -126,7 +124,7 @@ public class PagedResourcesAssemblerUnitTests {
 		resolver.setOneIndexedParameters(true);
 
 		AbstractPageRequest request = PageRequest.of(0, 1);
-		Page<Person> page = new PageImpl<>(Collections.<Person> emptyList(), Optional.of(request), 0);
+		Page<Person> page = new PageImpl<>(Collections.emptyList(), request, 0);
 
 		assembler.toResource(page);
 	}
@@ -290,12 +288,12 @@ public class PagedResourcesAssemblerUnitTests {
 
 	private static Page<Person> createPage(int index) {
 
-		AbstractPageRequest request = PageRequest.of(index, 1);
+		Pageable request = PageRequest.of(index, 1);
 
 		Person person = new Person();
 		person.name = "Dave";
 
-		return new PageImpl<>(Arrays.asList(person), Optional.of(request), 3);
+		return new PageImpl<>(Arrays.asList(person), request, 3);
 	}
 
 	private static Map<String, String> getQueryParameters(Link link) {

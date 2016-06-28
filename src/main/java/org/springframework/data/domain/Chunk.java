@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.core.convert.converter.Converter;
@@ -37,15 +36,15 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 	private static final long serialVersionUID = 867755909294344406L;
 
 	private final List<T> content = new ArrayList<>();
-	private final Optional<? extends Pageable> pageable;
+	private final Pageable pageable;
 
 	/**
 	 * Creates a new {@link Chunk} with the given content and the given governing {@link Pageable}.
 	 * 
 	 * @param content must not be {@literal null}.
-	 * @param pageable can be {@literal null}.
+	 * @param pageable must not be {@literal null}.
 	 */
-	public Chunk(List<T> content, Optional<? extends Pageable> pageable) {
+	public Chunk(List<T> content, Pageable pageable) {
 
 		Assert.notNull(content, "Content must not be null!");
 
@@ -58,7 +57,7 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 	 * @see org.springframework.data.domain.Slice#getNumber()
 	 */
 	public int getNumber() {
-		return pageable.map(Pageable::getPageNumber).orElse(0);
+		return pageable == Pageable.NONE ? 0 : pageable.getPageNumber();
 	}
 
 	/*
@@ -66,7 +65,7 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 	 * @see org.springframework.data.domain.Slice#getSize()
 	 */
 	public int getSize() {
-		return pageable.map(Pageable::getPageSize).orElse(0);
+		return pageable == Pageable.NONE ? 0 : pageable.getPageSize();
 	}
 
 	/*
@@ -105,16 +104,16 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 	 * (non-Javadoc)
 	 * @see org.springframework.data.domain.Slice#nextPageable()
 	 */
-	public Optional<Pageable> nextPageable() {
-		return hasNext() ? pageable.map(it -> it.next()) : Optional.empty();
+	public Pageable nextPageable() {
+		return hasNext() ? pageable.next() : Pageable.NONE;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.domain.Slice#previousPageable()
 	 */
-	public Optional<Pageable> previousPageable() {
-		return hasPrevious() ? pageable.map(it -> it.previousOrFirst()) : Optional.empty();
+	public Pageable previousPageable() {
+		return hasPrevious() ? pageable.previousOrFirst() : Pageable.NONE;
 	}
 
 	/*
@@ -138,8 +137,8 @@ abstract class Chunk<T> implements Slice<T>, Serializable {
 	 * @see org.springframework.data.domain.Slice#getSort()
 	 */
 	@Override
-	public Optional<Sort> getSort() {
-		return pageable.flatMap(it -> it.getSort());
+	public Sort getSort() {
+		return pageable.getSort();
 	}
 
 	/*

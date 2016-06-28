@@ -18,6 +18,7 @@ package org.springframework.data.repository.support;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.CrudRepository;
@@ -84,11 +85,12 @@ public class DefaultRepositoryInvokerFactory implements RepositoryInvokerFactory
 	 */
 	private RepositoryInvoker prepareInvokers(Class<?> domainType) {
 
-		Object repository = repositories.getRepositoryFor(domainType);
-		Assert.notNull(repository, String.format("No repository found for domain type: %s", domainType));
-		RepositoryInformation information = repositories.getRepositoryInformationFor(domainType);
+		Optional<Object> repository = repositories.getRepositoryFor(domainType);
 
-		return createInvoker(information, repository);
+		return repository//
+				.map(it -> createInvoker(repositories.getRepositoryInformationFor(domainType), it)) //
+				.orElseThrow(
+						() -> new IllegalArgumentException(String.format("No repository found for domain type: %s", domainType)));
 	}
 
 	@SuppressWarnings("unchecked")

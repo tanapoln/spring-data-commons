@@ -18,6 +18,8 @@ package org.springframework.data.web;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.data.web.PageableHandlerMethodArgumentResolver.*;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -162,7 +164,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 	public void returnsNullIfFallbackIsNullAndNoParametersGiven() throws Exception {
 
 		PageableHandlerMethodArgumentResolver resolver = getResolver();
-		resolver.setFallbackPageable(null);
+		resolver.setFallbackPageable(Optional.empty());
 
 		assertSupportedAndResult(supportedMethodParameter, null, new ServletWebRequest(new MockHttpServletRequest()),
 				resolver);
@@ -175,7 +177,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 	public void returnsNullIfFallbackIsNullAndOnlyPageIsGiven() throws Exception {
 
 		PageableHandlerMethodArgumentResolver resolver = getResolver();
-		resolver.setFallbackPageable(null);
+		resolver.setFallbackPageable(Optional.empty());
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("page", "20");
@@ -190,7 +192,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 	public void returnsNullIfFallbackIsNullAndOnlySizeIsGiven() throws Exception {
 
 		PageableHandlerMethodArgumentResolver resolver = getResolver();
-		resolver.setFallbackPageable(null);
+		resolver.setFallbackPageable(Optional.empty());
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("size", "10");
@@ -222,7 +224,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 	public void usesNullSortIfNoDefaultIsConfiguredAndPageAndSizeAreGiven() {
 
 		PageableHandlerMethodArgumentResolver resolver = getResolver();
-		resolver.setFallbackPageable(null);
+		resolver.setFallbackPageable(Optional.empty());
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("page", "0");
@@ -232,7 +234,7 @@ public class PageableHandlerMethodArgumentResolverUnitTests extends PageableDefa
 
 		assertThat(result.getPageNumber()).isEqualTo(0);
 		assertThat(result.getPageSize()).isEqualTo(10);
-		assertThat(result.getSort()).isNull();
+		assertThat(result.getSort().isSorted()).isFalse();
 	}
 
 	/**

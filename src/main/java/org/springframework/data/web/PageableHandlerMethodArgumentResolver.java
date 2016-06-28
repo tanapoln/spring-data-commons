@@ -90,6 +90,9 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 	 * @param fallbackPageable the {@link Pageable} to be used as general fallback.
 	 */
 	public void setFallbackPageable(Optional<Pageable> fallbackPageable) {
+
+		Assert.notNull(fallbackPageable, "Fallback Pageable must not be null!");
+
 		this.fallbackPageable = fallbackPageable;
 	}
 
@@ -230,26 +233,27 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 		String pageString = webRequest.getParameter(getParameterNameToUse(pageParameterName, methodParameter));
 		String pageSizeString = webRequest.getParameter(getParameterNameToUse(sizeParameterName, methodParameter));
 
-		boolean pageAndSizeGiven = StringUtils.hasText(pageString) && StringUtils.hasText(pageSizeString);
+		Optional<Integer> page = parseAndApplyBoundaries(pageString, Integer.MAX_VALUE, true);
+		Optional<Integer> pageSize = parseAndApplyBoundaries(pageSizeString, maxPageSize, false);
 
-		return defaultOrFallback.filter(it -> pageAndSizeGiven).map(it -> {
+		if (!(page.isPresent() && pageSize.isPresent()) && !defaultOrFallback.isPresent()) {
+			return null;
+		}
 
-			int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE, true)
-					: it.getPageNumber();
-			int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize, false)
-					: it.getPageSize();
+		int p = page.orElseGet(
+				() -> defaultOrFallback.map(it -> it.getPageNumber()).orElseThrow(() -> new IllegalStateException()));
+		int ps = pageSize
+				.orElseGet(() -> defaultOrFallback.map(it -> it.getPageSize()).orElseThrow(() -> new IllegalStateException()));
 
-			// Limit lower bound
-			pageSize = pageSize < 1 ? it.getPageSize() : pageSize;
-			// Limit upper bound
-			pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
+		// Limit lower bound
+		ps = ps < 1 ? defaultOrFallback.map(it -> it.getPageSize()).orElseThrow(() -> new IllegalStateException()) : ps;
+		// Limit upper bound
+		ps = ps > maxPageSize ? maxPageSize : ps;
 
-			Optional<Sort> sort = Optional
-					.ofNullable(sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory));
+		Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
 
-			return PageRequest.of(page, pageSize, sort.isPresent() ? sort : it.getSort());
-
-		}).orElse(null);
+		return PageRequest.of(p, ps,
+				sort.isSorted() ? sort : defaultOrFallback.map(it -> it.getSort()).orElse(Sort.unsorted()));
 	}
 
 	/**
@@ -309,13 +313,17 @@ public class PageableHandlerMethodArgumentResolver implements HandlerMethodArgum
 	 * @param shiftIndex whether to shift the index if {@link #oneIndexedParameters} is set to true.
 	 * @return
 	 */
-	private int parseAndApplyBoundaries(String parameter, int upper, boolean shiftIndex) {
+	private Optional<Integer> parseAndApplyBoundaries(String parameter, int upper, boolean shiftIndex) {
+
+		if (!StringUtils.hasText(parameter)) {
+			return Optional.empty();
+		}
 
 		try {
 			int parsed = Integer.parseInt(parameter) - (oneIndexedParameters && shiftIndex ? 1 : 0);
-			return parsed < 0 ? 0 : parsed > upper ? upper : parsed;
+			return Optional.of(parsed < 0 ? 0 : parsed > upper ? upper : parsed);
 		} catch (NumberFormatException e) {
-			return 0;
+			return Optional.of(0);
 		}
 	}
 }

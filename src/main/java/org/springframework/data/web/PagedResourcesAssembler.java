@@ -20,7 +20,6 @@ import static org.springframework.web.util.UriComponentsBuilder.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
@@ -213,7 +212,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 		boolean isNavigable = page.hasPrevious() || page.hasNext();
 
 		if (isNavigable || forceFirstAndLastRels) {
-			resources.add(createLink(base, Optional.of(PageRequest.of(0, page.getSize(), page.getSort())), Link.REL_FIRST));
+			resources.add(createLink(base, PageRequest.of(0, page.getSize(), page.getSort()), Link.REL_FIRST));
 		}
 
 		if (page.hasPrevious()) {
@@ -230,8 +229,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 
 			int lastIndex = page.getTotalPages() == 0 ? 0 : page.getTotalPages() - 1;
 
-			resources
-					.add(createLink(base, Optional.of(PageRequest.of(lastIndex, page.getSize(), page.getSort())), Link.REL_LAST));
+			resources.add(createLink(base, PageRequest.of(lastIndex, page.getSize(), page.getSort()), Link.REL_LAST));
 		}
 
 		return resources;
@@ -260,7 +258,7 @@ public class PagedResourcesAssembler<T> implements ResourceAssembler<Page<T>, Pa
 	 * @param rel must not be {@literal null} or empty.
 	 * @return
 	 */
-	private Link createLink(UriTemplate base, Optional<Pageable> pageable, String rel) {
+	private Link createLink(UriTemplate base, Pageable pageable, String rel) {
 
 		UriComponentsBuilder builder = fromUri(base.expand());
 		pageableResolver.enhance(builder, getMethodParameter(), pageable);

@@ -17,7 +17,6 @@ package org.springframework.data.querydsl;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,20 +59,20 @@ public class QuerydslRepositoryInvokerAdapter implements RepositoryInvoker {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokePagedFindAll(java.util.Optional)
+	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokePagedFindAll(org.springframework.data.domain.Pageable)
 	 */
 	@Override
-	public Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable) {
-		return executor.findAllPaged(predicate, pageable);
+	public Iterable<Object> invokeFindAll(Pageable pageable) {
+		return executor.findAll(predicate, pageable);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokeSortedFindAll(java.util.Optional)
+	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokeSortedFindAll(org.springframework.data.domain.Sort)
 	 */
 	@Override
-	public Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort) {
-		return executor.findAllSorted(predicate, sort);
+	public Iterable<Object> invokeFindAll(Sort sort) {
+		return executor.findAll(predicate, sort);
 	}
 
 	/* 
@@ -130,13 +129,13 @@ public class QuerydslRepositoryInvokerAdapter implements RepositoryInvoker {
 		return delegate.invokeFindOne(id);
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokeQueryMethod(java.lang.reflect.Method, org.springframework.util.MultiValueMap, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort)
 	 */
 	@Override
-	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters,
-			Optional<Pageable> pageable, Optional<Sort> sort) {
+	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters, Pageable pageable,
+			Sort sort) {
 		return delegate.invokeQueryMethod(method, parameters, pageable, sort);
 	}
 

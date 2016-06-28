@@ -119,8 +119,8 @@ public class DomainClassConverterUnitTests {
 		ApplicationContext context = initContextWithRepo();
 		converter.setApplicationContext(context);
 
-		when(service.canConvert(String.class, Long.class)).thenReturn(true);
-		when(service.convert(anyString(), eq(Long.class))).thenReturn(1L);
+		doReturn(true).when(service).canConvert(String.class, Long.class);
+		doReturn(1L).when(service).convert(anyString(), eq(Long.class));
 
 		converter.convert("1", STRING_TYPE, USER_TYPE);
 

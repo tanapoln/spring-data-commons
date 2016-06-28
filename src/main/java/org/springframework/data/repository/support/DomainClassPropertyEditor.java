@@ -18,6 +18,7 @@ package org.springframework.data.repository.support;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.SimpleTypeConverter;
@@ -80,14 +81,9 @@ public class DomainClassPropertyEditor<T, ID extends Serializable> extends Prope
 	@SuppressWarnings("unchecked")
 	public String getAsText() {
 
-		T entity = (T) getValue();
-
-		if (null == entity) {
-			return null;
-		}
-
-		Object id = getId(entity);
-		return id == null ? null : id.toString();
+		return Optional.ofNullable((T) getValue())//
+				.flatMap(it -> getId(it))//
+				.map(Object::toString).orElse(null);
 	}
 
 	/**
@@ -97,8 +93,7 @@ public class DomainClassPropertyEditor<T, ID extends Serializable> extends Prope
 	 * @param entity
 	 * @return
 	 */
-	private ID getId(T entity) {
-
+	private Optional<ID> getId(T entity) {
 		return information.getId(entity);
 	}
 
@@ -115,14 +110,12 @@ public class DomainClassPropertyEditor<T, ID extends Serializable> extends Prope
 
 		Class<ID> idClass = information.getIdType();
 
-		PropertyEditor idEditor = registry.findCustomEditor(idClass, null);
+		return Optional.ofNullable(registry.findCustomEditor(idClass, null)).map(it -> {
 
-		if (idEditor != null) {
-			idEditor.setAsText(idAsString);
-			return (ID) idEditor.getValue();
-		}
+			it.setAsText(idAsString);
+			return (ID) it.getValue();
 
-		return new SimpleTypeConverter().convertIfNecessary(idAsString, idClass);
+		}).orElseGet(() -> new SimpleTypeConverter().convertIfNecessary(idAsString, idClass));
 	}
 
 	/*

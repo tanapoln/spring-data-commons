@@ -158,8 +158,8 @@ public class AbstractPersistentPropertyUnitTests {
 		PersistentProperty<SamplePersistentProperty> property = new SamplePersistentProperty(Optional.of(field),
 				getPropertyDescriptor(AccessorTestClass.class, "anotherId"), entity, typeHolder);
 
-		assertThat(property.getGetter()).isNull();
-		assertThat(property.getSetter()).isNull();
+		assertThat(property.getGetter()).isNotPresent();
+		assertThat(property.getSetter()).isNotPresent();
 	}
 
 	/**
@@ -172,8 +172,8 @@ public class AbstractPersistentPropertyUnitTests {
 		PersistentProperty<SamplePersistentProperty> property = new SamplePersistentProperty(Optional.of(field),
 				getPropertyDescriptor(AccessorTestClass.class, "yetAnotherId"), entity, typeHolder);
 
-		assertThat(property.getGetter()).isNotNull();
-		assertThat(property.getSetter()).isNull();
+		assertThat(property.getGetter()).isPresent();
+		assertThat(property.getSetter()).isNotPresent();
 	}
 
 	/**
@@ -186,8 +186,8 @@ public class AbstractPersistentPropertyUnitTests {
 		PersistentProperty<SamplePersistentProperty> property = new SamplePersistentProperty(Optional.of(field),
 				getPropertyDescriptor(AccessorTestClass.class, "yetYetAnotherId"), entity, typeHolder);
 
-		assertThat(property.getGetter()).isNull();
-		assertThat(property.getSetter()).isNotNull();
+		assertThat(property.getGetter()).isNotPresent();
+		assertThat(property.getSetter()).isPresent();
 	}
 
 	/**
@@ -200,8 +200,8 @@ public class AbstractPersistentPropertyUnitTests {
 		PersistentProperty<SamplePersistentProperty> property = new SamplePersistentProperty(Optional.of(field), null,
 				entity, typeHolder);
 
-		assertThat(property.getGetter()).isNull();
-		assertThat(property.getSetter()).isNull();
+		assertThat(property.getGetter()).isNotPresent();
+		assertThat(property.getSetter()).isNotPresent();
 	}
 
 	/**

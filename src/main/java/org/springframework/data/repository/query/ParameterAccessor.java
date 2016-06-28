@@ -33,7 +33,7 @@ public interface ParameterAccessor extends Iterable<Object> {
 	 * 
 	 * @return
 	 */
-	Optional<Pageable> getPageable();
+	Pageable getPageable();
 
 	/**
 	 * Returns the sort instance to be used for query creation. Will use a {@link Sort} parameter if available or the
@@ -41,7 +41,7 @@ public interface ParameterAccessor extends Iterable<Object> {
 	 * 
 	 * @return
 	 */
-	Optional<Sort> getSort();
+	Sort getSort();
 
 	/**
 	 * Returns the dynamic projection type to be used when executing the query or {@literal null} if none is defined.

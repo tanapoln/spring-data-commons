@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.Part.Type;
@@ -72,14 +71,14 @@ public class PartTreeUnitTests {
 	public void parsesAndPropertiesCorrectly() throws Exception {
 		PartTree partTree = partTree("firstnameAndLastname");
 		assertPart(partTree, parts("firstname", "lastname"));
-		assertThat(partTree.getSort()).isNotPresent();
+		assertThat(partTree.getSort().isSorted()).isFalse();
 	}
 
 	@Test
 	public void parsesOrPropertiesCorrectly() throws Exception {
 		PartTree partTree = partTree("firstnameOrLastname");
 		assertPart(partTree, parts("firstname"), parts("lastname"));
-		assertThat(partTree.getSort()).isNotPresent();
+		assertThat(partTree.getSort().isSorted()).isFalse();
 	}
 
 	@Test
@@ -90,7 +89,7 @@ public class PartTreeUnitTests {
 
 	@Test
 	public void hasSortIfOrderByIsGiven() throws Exception {
-		assertThat(partTree("firstnameOrderByLastnameDesc").getSort()).hasValue(new Sort(Direction.DESC, "lastname"));
+		assertThat(partTree("firstnameOrderByLastnameDesc").getSort()).isEqualTo(Sort.by("lastname").descending());
 	}
 
 	@Test
@@ -102,7 +101,7 @@ public class PartTreeUnitTests {
 
 	private void hasSortIfOrderByIsGivenWithAllIgnoreCase(String source) throws Exception {
 		PartTree partTree = partTree(source);
-		assertThat(partTree.getSort()).hasValue(new Sort(Direction.DESC, "lastname"));
+		assertThat(partTree.getSort()).isEqualTo(Sort.by("lastname").descending());
 	}
 
 	@Test
@@ -116,7 +115,7 @@ public class PartTreeUnitTests {
 			// Check it's non-greedy (would strip everything until Order*By*
 			// otherwise)
 			PartTree tree = detectsDistinctCorrectly(prefix + "ByLastnameOrderByFirstnameDesc", false);
-			assertThat(tree.getSort()).hasValue(new Sort(Direction.DESC, "firstname"));
+			assertThat(tree.getSort()).isEqualTo(Sort.by("firstname").descending());
 		}
 	}
 
@@ -336,9 +335,7 @@ public class PartTreeUnitTests {
 
 		assertPart(tree, new Part[] { new Part("øre", DomainObjectWithSpecialChars.class),
 				new Part("år", DomainObjectWithSpecialChars.class) });
-		assertThat(tree.getSort()).hasValueSatisfying(it -> {
-			assertThat(it.getOrderFor("år").isAscending()).isTrue();
-		});
+		assertThat(tree.getSort().getOrderFor("år").isAscending()).isTrue();
 	}
 
 	/**
@@ -351,9 +348,7 @@ public class PartTreeUnitTests {
 
 		assertPart(tree, new Part[] { new Part("이름", DomainObjectWithSpecialChars.class),
 				new Part("생일", DomainObjectWithSpecialChars.class) });
-		assertThat(tree.getSort()).hasValueSatisfying(it -> {
-			assertThat(it.getOrderFor("생일").isAscending()).isTrue();
-		});
+		assertThat(tree.getSort().getOrderFor("생일").isAscending()).isTrue();
 	}
 
 	/**
@@ -366,9 +361,7 @@ public class PartTreeUnitTests {
 
 		assertPart(tree, new Part[] { new Part("이름", DomainObjectWithSpecialChars.class),
 				new Part("order.id", DomainObjectWithSpecialChars.class) });
-		assertThat(tree.getSort()).hasValueSatisfying(it -> {
-			assertThat(it.getOrderFor("생일").isAscending()).isTrue();
-		});
+		assertThat(tree.getSort().getOrderFor("생일").isAscending()).isTrue();
 	}
 
 	/**
@@ -391,14 +384,12 @@ public class PartTreeUnitTests {
 						new Part("이름", DomainObjectWithSpecialChars.class), //
 						new Part("order.id", DomainObjectWithSpecialChars.class), //
 						new Part("nested.이름", DomainObjectWithSpecialChars.class) //
-		});
+				});
 		assertPartsIn(parts.next(), new Part[] { //
 				new Part("nested.order.id", DomainObjectWithSpecialChars.class) //
 		});
 
-		assertThat(tree.getSort()).hasValueSatisfying(it -> {
-			assertThat(it.getOrderFor("생일").isAscending()).isTrue();
-		});
+		assertThat(tree.getSort().getOrderFor("생일").isAscending()).isTrue();
 	}
 
 	/**
@@ -429,17 +420,15 @@ public class PartTreeUnitTests {
 						new Part("property1", DomainObjectWithSpecialChars.class), //
 						new Part("øre", DomainObjectWithSpecialChars.class), //
 						new Part("år", DomainObjectWithSpecialChars.class) //
-		});
+				});
 		assertPartsIn(parts.next(),
 				new Part[] { //
 						new Part("nested.order.id", DomainObjectWithSpecialChars.class), //
 						new Part("nested.property1", DomainObjectWithSpecialChars.class), //
 						new Part("property1", DomainObjectWithSpecialChars.class) //
-		});
+				});
 
-		assertThat(tree.getSort()).hasValueSatisfying(it -> {
-			assertThat(it.getOrderFor("생일").isAscending()).isTrue();
-		});
+		assertThat(tree.getSort().getOrderFor("생일").isAscending()).isTrue();
 	}
 
 	/**
@@ -526,7 +515,7 @@ public class PartTreeUnitTests {
 		PartTree tree = new PartTree("findAllByOrderByLastnameAsc", User.class);
 
 		assertThat(tree.getParts()).isEmpty();
-		assertThat(tree.getSort()).hasValue(new Sort(Direction.ASC, "lastname"));
+		assertThat(tree.getSort()).isEqualTo(Sort.by("lastname").ascending());
 	}
 
 	/**

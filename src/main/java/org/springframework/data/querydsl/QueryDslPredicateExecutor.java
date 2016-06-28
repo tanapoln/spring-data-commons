@@ -15,8 +15,6 @@
  */
 package org.springframework.data.querydsl;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,7 +58,7 @@ public interface QueryDslPredicateExecutor<T> {
 	 * @return all entities matching the given {@link Predicate}.
 	 * @since 1.10
 	 */
-	Iterable<T> findAllSorted(Predicate predicate, Optional<? extends Sort> sort);
+	Iterable<T> findAll(Predicate predicate, Sort sort);
 
 	/**
 	 * Returns all entities matching the given {@link Predicate} applying the given {@link OrderSpecifier}s. In case no
@@ -70,7 +68,7 @@ public interface QueryDslPredicateExecutor<T> {
 	 * @param orders the {@link OrderSpecifier}s to sort the results by
 	 * @return all entities matching the given {@link Predicate} applying the given {@link OrderSpecifier}s.
 	 */
-	Iterable<T> findAllSorted(Predicate predicate, OrderSpecifier<?>... orders);
+	Iterable<T> findAll(Predicate predicate, OrderSpecifier<?>... orders);
 
 	/**
 	 * Returns all entities ordered by the given {@link OrderSpecifier}s.
@@ -78,7 +76,7 @@ public interface QueryDslPredicateExecutor<T> {
 	 * @param orders the {@link OrderSpecifier}s to sort the results by.
 	 * @return all entities ordered by the given {@link OrderSpecifier}s.
 	 */
-	Iterable<T> findAllSorted(OrderSpecifier<?>... orders);
+	Iterable<T> findAll(OrderSpecifier<?>... orders);
 
 	/**
 	 * Returns a {@link Page} of entities matching the given {@link Predicate}. In case no match could be found, an empty
@@ -88,7 +86,7 @@ public interface QueryDslPredicateExecutor<T> {
 	 * @param pageable can be {@literal null}.
 	 * @return a {@link Page} of entities matching the given {@link Predicate}.
 	 */
-	Page<T> findAllPaged(Predicate predicate, Optional<? extends Pageable> pageable);
+	Page<T> findAll(Predicate predicate, Pageable pageable);
 
 	/**
 	 * Returns the number of instances matching the given {@link Predicate}.

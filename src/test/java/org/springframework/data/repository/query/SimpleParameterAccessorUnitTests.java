@@ -42,7 +42,6 @@ public class SimpleParameterAccessorUnitTests {
 
 	@Test
 	public void testname() throws Exception {
-
 		new ParametersParameterAccessor(parameters, new Object[] { "test" });
 	}
 
@@ -54,19 +53,16 @@ public class SimpleParameterAccessorUnitTests {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNullValues() throws Exception {
-
 		new ParametersParameterAccessor(parameters, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsTooLittleNumberOfArguments() throws Exception {
-
 		new ParametersParameterAccessor(parameters, new Object[0]);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsTooManyArguments() throws Exception {
-
 		new ParametersParameterAccessor(parameters, new Object[] { "test", "test" });
 	}
 
@@ -74,8 +70,9 @@ public class SimpleParameterAccessorUnitTests {
 	public void returnsNullForPageableAndSortIfNoneAvailable() throws Exception {
 
 		ParameterAccessor accessor = new ParametersParameterAccessor(parameters, new Object[] { "test" });
-		assertThat(accessor.getPageable()).isNull();
-		assertThat(accessor.getSort()).isNull();
+
+		assertThat(accessor.getPageable()).isEqualTo(Pageable.NONE);
+		assertThat(accessor.getSort().isSorted()).isFalse();
 	}
 
 	@Test
@@ -83,8 +80,9 @@ public class SimpleParameterAccessorUnitTests {
 
 		Sort sort = Sort.by("foo");
 		ParameterAccessor accessor = new ParametersParameterAccessor(sortParameters, new Object[] { "test", sort });
+
 		assertThat(accessor.getSort()).isEqualTo(sort);
-		assertThat(accessor.getPageable()).isNull();
+		assertThat(accessor.getPageable()).isEqualTo(Pageable.NONE);
 	}
 
 	@Test
@@ -92,8 +90,9 @@ public class SimpleParameterAccessorUnitTests {
 
 		Pageable pageable = PageRequest.of(0, 10);
 		ParameterAccessor accessor = new ParametersParameterAccessor(pageableParameters, new Object[] { "test", pageable });
+
 		assertThat(accessor.getPageable()).isEqualTo(pageable);
-		assertThat(accessor.getSort()).isNull();
+		assertThat(accessor.getSort().isSorted()).isFalse();
 	}
 
 	@Test
@@ -102,6 +101,7 @@ public class SimpleParameterAccessorUnitTests {
 		Sort sort = Sort.by("foo");
 		Pageable pageable = PageRequest.of(0, 10, sort);
 		ParameterAccessor accessor = new ParametersParameterAccessor(pageableParameters, new Object[] { "test", pageable });
+
 		assertThat(accessor.getPageable()).isEqualTo(pageable);
 		assertThat(accessor.getSort()).isEqualTo(sort);
 	}

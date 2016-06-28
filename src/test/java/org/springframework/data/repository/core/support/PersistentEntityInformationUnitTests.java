@@ -48,7 +48,7 @@ public class PersistentEntityInformationUnitTests {
 		Sample sample = new Sample();
 		sample.id = 5L;
 
-		assertThat(information.getId(sample)).isEqualTo(5L);
+		assertThat(information.getId(sample)).hasValue(5L);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class PersistentEntityInformationUnitTests {
 
 		PersistentEntityInformation<Object, Serializable> information = new PersistentEntityInformation<Object, Serializable>(
 				entity);
-		assertThat(information.getId(new EntityWithoutId())).isNull();
+		assertThat(information.getId(new EntityWithoutId())).isNotPresent();
 	}
 
 	static class Sample {

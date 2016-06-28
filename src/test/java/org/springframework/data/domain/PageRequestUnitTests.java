@@ -33,7 +33,7 @@ public class PageRequestUnitTests extends AbstractPageRequestUnitTests {
 	 */
 	@Override
 	public AbstractPageRequest newPageRequest(int page, int size) {
-		return this.newPageRequest(page, size, null);
+		return PageRequest.of(page, size);
 	}
 
 	public AbstractPageRequest newPageRequest(int page, int size, Sort sort) {

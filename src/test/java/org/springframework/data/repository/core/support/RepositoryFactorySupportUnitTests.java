@@ -132,7 +132,7 @@ public class RepositoryFactorySupportUnitTests {
 		Pageable pageable = PageRequest.of(0, 10);
 		repository.findAll(pageable);
 
-		verify(backingRepo, times(1)).findAllPaged(Optional.of(pageable));
+		verify(backingRepo, times(1)).findAll(pageable);
 	}
 
 	@Test

@@ -59,7 +59,7 @@ public class IdPropertyIdentifierAccessorUnitTests {
 		IdentifierAccessor accessor = new IdPropertyIdentifierAccessor(
 				mappingContext.getPersistentEntity(SampleWithId.class), sample);
 
-		assertThat(accessor.getIdentifier()).isEqualTo(sample.id);
+		assertThat(accessor.getIdentifier()).hasValue(sample.id);
 	}
 
 	static class Sample {}

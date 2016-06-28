@@ -15,8 +15,6 @@
  */
 package org.springframework.data.domain;
 
-import java.util.Optional;
-
 /**
  * Abstract interface for pagination information.
  * 
@@ -50,7 +48,11 @@ public interface Pageable {
 	 * 
 	 * @return
 	 */
-	Optional<Sort> getSort();
+	Sort getSort();
+
+	default Sort getSortOr(Sort sort) {
+		return getSort().isSorted() ? getSort() : sort;
+	}
 
 	/**
 	 * Returns the {@link Pageable} requesting the next {@link Page}.
@@ -80,4 +82,47 @@ public interface Pageable {
 	 * @return
 	 */
 	boolean hasPrevious();
+
+	public static Pageable NONE = new Pageable() {
+
+		@Override
+		public Pageable previousOrFirst() {
+			return this;
+		}
+
+		@Override
+		public Pageable next() {
+			return this;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return false;
+		}
+
+		@Override
+		public Sort getSort() {
+			return Sort.unsorted();
+		}
+
+		@Override
+		public int getPageSize() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getPageNumber() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public long getOffset() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Pageable first() {
+			return this;
+		}
+	};
 }

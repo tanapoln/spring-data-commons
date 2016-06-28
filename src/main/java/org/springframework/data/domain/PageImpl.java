@@ -31,7 +31,7 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	private static final long serialVersionUID = 867755909294344406L;
 
 	private final long total;
-	private final Optional<? extends Pageable> pageable;
+	private final Pageable pageable;
 
 	/**
 	 * Constructor of {@code PageImpl}.
@@ -41,13 +41,15 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 * @param total the total amount of items available. The total might be adapted considering the length of the content
 	 *          given, if it is going to be the content of the last page. This is in place to mitigate inconsistencies
 	 */
-	public PageImpl(List<T> content, Optional<? extends Pageable> pageable, long total) {
+	public PageImpl(List<T> content, Pageable pageable, long total) {
 
 		super(content, pageable);
 
 		this.pageable = pageable;
 
-		this.total = pageable.filter(it -> !content.isEmpty())//
+		Optional<Pageable> foo = Pageable.NONE == pageable ? Optional.empty() : Optional.of(pageable);
+
+		this.total = foo.filter(it -> !content.isEmpty())//
 				.filter(it -> it.getOffset() + it.getPageSize() > total)//
 				.map(it -> it.getOffset() + content.size())//
 				.orElse(total);
@@ -60,7 +62,7 @@ public class PageImpl<T> extends Chunk<T> implements Page<T> {
 	 * @param content must not be {@literal null}.
 	 */
 	public PageImpl(List<T> content) {
-		this(content, Optional.empty(), null == content ? 0 : content.size());
+		this(content, Pageable.NONE, null == content ? 0 : content.size());
 	}
 
 	/*

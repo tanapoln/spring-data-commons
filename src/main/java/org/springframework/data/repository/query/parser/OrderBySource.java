@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +37,8 @@ import org.springframework.util.StringUtils;
  * @author Oliver Gierke
  */
 class OrderBySource {
+
+	public static OrderBySource EMPTY = new OrderBySource("");
 
 	private static final String BLOCK_SPLIT = "(?<=Asc|Desc)(?=\\p{Lu})";
 	private static final Pattern DIRECTION_SPLIT = Pattern.compile("(.+?)(Asc|Desc)?$");
@@ -66,6 +67,10 @@ class OrderBySource {
 	public OrderBySource(String clause, Class<?> domainClass) {
 
 		this.orders = new ArrayList<Sort.Order>();
+
+		if (!StringUtils.hasText(clause)) {
+			return;
+		}
 
 		for (String part : clause.split(BLOCK_SPLIT)) {
 
@@ -112,8 +117,8 @@ class OrderBySource {
 	 * 
 	 * @return the {@link Sort}.
 	 */
-	public Optional<Sort> toSort() {
-		return this.orders.isEmpty() ? Optional.empty() : Optional.of(new Sort(this.orders));
+	public Sort toSort() {
+		return this.orders.isEmpty() ? Sort.unsorted() : new Sort(this.orders);
 	}
 
 	/*

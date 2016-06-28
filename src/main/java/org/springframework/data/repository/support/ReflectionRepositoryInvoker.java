@@ -87,7 +87,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokeSortedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort) {
+	public Iterable<Object> invokeFindAll(Sort sort) {
 		return invokeSortedFindAllReflectively(sort);
 	}
 
@@ -96,7 +96,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	 * @see org.springframework.data.repository.support.RepositoryInvoker#invokePagedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable) {
+	public Iterable<Object> invokeFindAll(Pageable pageable) {
 		return invokePagedFindAllReflectively(pageable);
 	}
 
@@ -165,7 +165,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		if (idTypes.contains(parameterType)) {
 			invoke(method, convertId(id));
 		} else {
-			invoke(method, this.<Object> invokeFindOne(id));
+			invoke(method, this.<Object>invokeFindOne(id));
 		}
 	}
 
@@ -174,11 +174,13 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeQueryMethod(java.lang.reflect.Method, java.util.Map, org.springframework.data.domain.Pageable, org.springframework.data.domain.Sort)
 	 */
 	@Override
-	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters,
-			Optional<Pageable> pageable, Optional<Sort> sort) {
+	public Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters, Pageable pageable,
+			Sort sort) {
 
 		Assert.notNull(method, "Method must not be null!");
 		Assert.notNull(parameters, "Parameters must not be null!");
+		Assert.notNull(pageable, "Pageable must not be null!");
+		Assert.notNull(sort, "Sort must not be null!");
 
 		ReflectionUtils.makeAccessible(method);
 
@@ -186,7 +188,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 	}
 
 	private Object[] prepareParameters(Method method, MultiValueMap<String, ? extends Object> rawParameters,
-			Optional<Pageable> pageable, Optional<Sort> sort) {
+			Pageable pageable, Sort sort) {
 
 		List<MethodParameter> parameters = new MethodParameters(method, Optional.of(PARAM_ANNOTATION)).getParameters();
 
@@ -195,8 +197,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		}
 
 		Object[] result = new Object[parameters.size()];
-		Sort sortToUse = pageable.flatMap(it -> it.getSort()).orElse(null);
-		Pageable pageableToUse = pageable.orElse(null);
+		Sort sortToUse = pageable.getSortOr(sort);
 
 		for (int i = 0; i < result.length; i++) {
 
@@ -204,7 +205,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 			Class<?> targetType = param.getParameterType();
 
 			if (Pageable.class.isAssignableFrom(targetType)) {
-				result[i] = pageableToUse;
+				result[i] = pageable;
 			} else if (Sort.class.isAssignableFrom(targetType)) {
 				result[i] = sortToUse;
 			} else {
@@ -257,7 +258,7 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		return conversionService.convert(id, idType);
 	}
 
-	protected Iterable<Object> invokePagedFindAllReflectively(Optional<? extends Pageable> pageable) {
+	protected Iterable<Object> invokePagedFindAllReflectively(Pageable pageable) {
 
 		Assert.state(hasFindAllMethod(), "Repository doesn't have a find-all-method declared!");
 
@@ -269,13 +270,13 @@ class ReflectionRepositoryInvoker implements RepositoryInvoker {
 		}
 
 		if (Pageable.class.isAssignableFrom(types[0])) {
-			return invoke(method, pageable.orElse(null));
+			return invoke(method, pageable);
 		}
 
-		return invokeSortedFindAll(pageable.flatMap(it -> it.getSort()));
+		return invokeFindAll(pageable.getSort());
 	}
 
-	protected Iterable<Object> invokeSortedFindAllReflectively(Optional<? extends Sort> sort) {
+	protected Iterable<Object> invokeSortedFindAllReflectively(Sort sort) {
 
 		Assert.state(hasFindAllMethod(), "Repository doesn't have a find-all-method declared!");
 

@@ -17,7 +17,6 @@ package org.springframework.data.repository.support;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Pageable;
@@ -69,8 +68,8 @@ class CrudRepositoryInvoker extends ReflectionRepositoryInvoker {
 	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeFindAll(org.springframework.data.domain.Sort)
 	 */
 	@Override
-	public Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort) {
-		return customFindAllMethod ? super.invokeSortedFindAll(sort) : repository.findAll();
+	public Iterable<Object> invokeFindAll(Sort sort) {
+		return customFindAllMethod ? super.invokeFindAll(sort) : repository.findAll();
 	}
 
 	/* 
@@ -78,8 +77,8 @@ class CrudRepositoryInvoker extends ReflectionRepositoryInvoker {
 	 * @see org.springframework.data.rest.core.invoke.RepositoryInvoker#invokeFindAll(org.springframework.data.domain.Pageable)
 	 */
 	@Override
-	public Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable) {
-		return customFindAllMethod ? super.invokePagedFindAll(pageable) : repository.findAll();
+	public Iterable<Object> invokeFindAll(Pageable pageable) {
+		return customFindAllMethod ? super.invokeFindAll(pageable) : repository.findAll();
 	}
 
 	/*
@@ -89,7 +88,7 @@ class CrudRepositoryInvoker extends ReflectionRepositoryInvoker {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T invokeFindOne(Serializable id) {
-		return customFindOneMethod ? super.<T> invokeFindOne(id) : (T) repository.findOne(convertId(id));
+		return customFindOneMethod ? super.<T>invokeFindOne(id) : (T) repository.findOne(convertId(id));
 	}
 
 	/*

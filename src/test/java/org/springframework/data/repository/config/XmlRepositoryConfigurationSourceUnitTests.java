@@ -48,6 +48,6 @@ public class XmlRepositoryConfigurationSourceUnitTests {
 
 		when(element.getAttribute("some-xml-attribute")).thenReturn("value");
 
-		assertThat(source.getAttribute("someXmlAttribute")).isEqualTo("value");
+		assertThat(source.getAttribute("someXmlAttribute")).hasValue("value");
 	}
 }

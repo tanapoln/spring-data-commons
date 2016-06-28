@@ -99,7 +99,7 @@ public class ResultProcessorUnitTests {
 		ResultProcessor information = getProcessor("findAllProjection");
 
 		List<Map<String, Object>> source = new ArrayList<Map<String, Object>>(
-				Arrays.asList(Collections.<String, Object> singletonMap("lastname", "Matthews")));
+				Arrays.asList(Collections.<String, Object>singletonMap("lastname", "Matthews")));
 
 		List<SampleProjection> result = information.processResult(source);
 
@@ -160,10 +160,10 @@ public class ResultProcessorUnitTests {
 		ParameterAccessor accessor = mock(ParameterAccessor.class);
 
 		ResultProcessor factory = getProcessor("findOneDynamic", Class.class);
-		assertThat(factory.withDynamicProjection(null)).isEqualTo(factory);
+		assertThat(factory.withDynamicProjection(Optional.empty())).isEqualTo(factory);
 		assertThat(factory.withDynamicProjection(Optional.of(accessor))).isEqualTo(factory);
 
-		doReturn(SampleProjection.class).when(accessor).getDynamicProjection();
+		doReturn(Optional.of(SampleProjection.class)).when(accessor).getDynamicProjection();
 
 		ResultProcessor processor = factory.withDynamicProjection(Optional.of(accessor));
 		assertThat(processor.getReturnedType().getReturnedType()).isEqualTo(SampleProjection.class);

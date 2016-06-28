@@ -68,30 +68,34 @@ public class ParametersParameterAccessor implements ParameterAccessor {
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.query.ParameterAccessor#getPageable()
 	 */
-	public Optional<Pageable> getPageable() {
+	public Pageable getPageable() {
 
 		if (!parameters.hasPageableParameter()) {
-			return Optional.empty();
+			return Pageable.NONE;
 		}
 
-		return Optional.ofNullable((Pageable) values.get(parameters.getPageableIndex()));
+		Pageable pageable = (Pageable) values.get(parameters.getPageableIndex());
+
+		return pageable == null ? Pageable.NONE : pageable;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.query.ParameterAccessor#getSort()
 	 */
-	public Optional<Sort> getSort() {
+	public Sort getSort() {
 
 		if (parameters.hasSortParameter()) {
-			return Optional.ofNullable((Sort) values.get(parameters.getSortIndex()));
+
+			Sort sort = (Sort) values.get(parameters.getSortIndex());
+			return sort == null ? Sort.unsorted() : sort;
 		}
 
 		if (parameters.hasPageableParameter()) {
-			return getPageable().flatMap(it -> it.getSort());
+			return getPageable().getSort();
 		}
 
-		return Optional.empty();
+		return Sort.unsorted();
 	}
 
 	/**

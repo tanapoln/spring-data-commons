@@ -17,7 +17,6 @@ package org.springframework.data.repository.support;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Pageable;
@@ -63,8 +62,8 @@ class PagingAndSortingRepositoryInvoker extends CrudRepositoryInvoker {
 	 * @see org.springframework.data.repository.support.CrudRepositoryInvoker#invokeSortedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort) {
-		return customFindAll ? invokeSortedFindAllReflectively(sort) : repository.findAllSorted(sort);
+	public Iterable<Object> invokeFindAll(Sort sort) {
+		return customFindAll ? invokeSortedFindAllReflectively(sort) : repository.findAll(sort);
 	}
 
 	/*
@@ -72,8 +71,8 @@ class PagingAndSortingRepositoryInvoker extends CrudRepositoryInvoker {
 	 * @see org.springframework.data.repository.support.CrudRepositoryInvoker#invokePagedFindAll(java.util.Optional)
 	 */
 	@Override
-	public Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable) {
-		return customFindAll ? invokePagedFindAllReflectively(pageable) : repository.findAllPaged(pageable);
+	public Iterable<Object> invokeFindAll(Pageable pageable) {
+		return customFindAll ? invokePagedFindAllReflectively(pageable) : repository.findAll(pageable);
 	}
 
 	private boolean isRedeclaredMethod(Method method) {

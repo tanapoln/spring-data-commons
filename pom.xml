@@ -17,6 +17,7 @@
 
 	<properties>
 		<scala>2.11.7</scala>
+		<mockito>2.0.70-beta</mockito>
 	</properties>
 
 	<dependencies>

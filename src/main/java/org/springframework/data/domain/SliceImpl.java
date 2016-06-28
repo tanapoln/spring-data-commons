@@ -16,7 +16,6 @@
 package org.springframework.data.domain;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.core.convert.converter.Converter;
 
@@ -31,7 +30,7 @@ public class SliceImpl<T> extends Chunk<T> {
 	private static final long serialVersionUID = 867755909294344406L;
 
 	private final boolean hasNext;
-	private final Optional<Pageable> pageable;
+	private final Pageable pageable;
 
 	/**
 	 * Creates a new {@link Slice} with the given content and {@link Pageable}.
@@ -40,7 +39,7 @@ public class SliceImpl<T> extends Chunk<T> {
 	 * @param pageable the paging information, can be {@literal null}.
 	 * @param hasNext whether there's another slice following the current one.
 	 */
-	public SliceImpl(List<T> content, Optional<Pageable> pageable, boolean hasNext) {
+	public SliceImpl(List<T> content, Pageable pageable, boolean hasNext) {
 
 		super(content, pageable);
 

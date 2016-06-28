@@ -17,7 +17,6 @@ package org.springframework.data.repository.support;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -65,7 +64,7 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * @return the result of the invocation of the find-all method.
 	 * @throws IllegalStateException if the repository does not expose a find-all-method.
 	 */
-	Iterable<Object> invokePagedFindAll(Optional<? extends Pageable> pageable);
+	Iterable<Object> invokeFindAll(Pageable pageable);
 
 	/**
 	 * Invokes the find-all method of the underlying repository using the method taking a {@link Sort} as parameter if
@@ -77,7 +76,7 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * @return the result of the invocation of the find-all method.
 	 * @throws IllegalStateException if the repository does not expose a find-all-method.
 	 */
-	Iterable<Object> invokeSortedFindAll(Optional<? extends Sort> sort);
+	Iterable<Object> invokeFindAll(Sort sort);
 
 	/**
 	 * Invokes the method equivalent to {@link org.springframework.data.repository.CrudRepository#delete(Serializable)}.
@@ -99,6 +98,6 @@ public interface RepositoryInvoker extends RepositoryInvocationInformation {
 	 * @return the result of the invoked query method.
 	 * @since 1.11
 	 */
-	Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters,
-			Optional<Pageable> pageable, Optional<Sort> sort);
+	Object invokeQueryMethod(Method method, MultiValueMap<String, ? extends Object> parameters, Pageable pageable,
+			Sort sort);
 }

@@ -102,7 +102,7 @@ public class BasicPersistentEntity<T, P extends PersistentProperty<P>> implement
 		this.properties = new ArrayList<>();
 		this.comparator = comparator;
 		this.constructor = new PreferredConstructorDiscoverer<>(this).getConstructor();
-		this.associations = comparator.<Set<Association<P>>> map(it -> new TreeSet<>(new AssociationComparator<>(it)))
+		this.associations = comparator.<Set<Association<P>>>map(it -> new TreeSet<>(new AssociationComparator<>(it)))
 				.orElse(new HashSet<>());
 
 		this.propertyCache = new HashMap<>();
@@ -431,7 +431,7 @@ public class BasicPersistentEntity<T, P extends PersistentProperty<P>> implement
 		 * @see org.springframework.data.mapping.IdentifierAccessor#getIdentifier()
 		 */
 		@Override
-		public Optional<? extends Object> getIdentifier() {
+		public Optional<Object> getIdentifier() {
 			return Optional.empty();
 		}
 	}

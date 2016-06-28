@@ -18,10 +18,13 @@ package org.springframework.data.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,6 +37,9 @@ import org.springframework.util.StringUtils;
 public class Sort implements Iterable<org.springframework.data.domain.Sort.Order>, Serializable {
 
 	private static final long serialVersionUID = 5737186511678863905L;
+
+	private static final Sort UNSORTED = new Sort(new Order[0]);
+
 	public static final Direction DEFAULT_DIRECTION = Direction.ASC;
 
 	private final List<Order> orders;
@@ -54,11 +60,9 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 	 */
 	public Sort(List<Order> orders) {
 
-		if (null == orders || orders.isEmpty()) {
-			throw new IllegalArgumentException("You have to provide at least one sort property to sort by!");
-		}
+		Assert.notNull(orders, "Orders must not be null!");
 
-		this.orders = orders;
+		this.orders = Collections.unmodifiableList(orders);
 	}
 
 	/**
@@ -103,6 +107,26 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 
 	public static Sort by(String... properties) {
 		return new Sort(properties);
+	}
+
+	public static Sort unsorted() {
+		return UNSORTED;
+	}
+
+	public Sort descending() {
+		return withDirection(Direction.DESC);
+	}
+
+	public Sort ascending() {
+		return withDirection(Direction.ASC);
+	}
+
+	private Sort withDirection(Direction direction) {
+		return new Sort(orders.stream().map(it -> new Order(direction, it.getProperty())).collect(Collectors.toList()));
+	}
+
+	public boolean isSorted() {
+		return !orders.isEmpty();
 	}
 
 	/**
@@ -190,7 +214,7 @@ public class Sort implements Iterable<org.springframework.data.domain.Sort.Order
 	 */
 	@Override
 	public String toString() {
-		return StringUtils.collectionToCommaDelimitedString(orders);
+		return orders.isEmpty() ? "UNSORTED" : StringUtils.collectionToCommaDelimitedString(orders);
 	}
 
 	/**

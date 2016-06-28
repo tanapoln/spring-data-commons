@@ -16,7 +16,6 @@
 package org.springframework.data.domain;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.util.Streamable;
@@ -70,7 +69,7 @@ public interface Slice<T> extends Streamable<T> {
 	 * 
 	 * @return
 	 */
-	Optional<Sort> getSort();
+	Sort getSort();
 
 	/**
 	 * Returns whether the current {@link Slice} is the first one.
@@ -107,7 +106,7 @@ public interface Slice<T> extends Streamable<T> {
 	 * 
 	 * @return
 	 */
-	Optional<Pageable> nextPageable();
+	Pageable nextPageable();
 
 	/**
 	 * Returns the {@link Pageable} to request the previous {@link Slice}. Can be {@literal null} in case the current
@@ -116,7 +115,7 @@ public interface Slice<T> extends Streamable<T> {
 	 * 
 	 * @return
 	 */
-	Optional<Pageable> previousPageable();
+	Pageable previousPageable();
 
 	/**
 	 * Returns a new {@link Slice} with the content of the current one mapped by the given {@link Converter}.

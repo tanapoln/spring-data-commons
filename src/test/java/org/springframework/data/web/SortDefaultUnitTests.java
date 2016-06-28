@@ -46,8 +46,7 @@ public abstract class SortDefaultUnitTests {
 
 	static final Sort SORT = new Sort(SORT_DIRECTION, SORT_FIELDS);
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	@Rule public ExpectedException exception = ExpectedException.none();
 
 	@Test
 	public void parsesSimpleSortStringCorrectly() {
@@ -74,12 +73,12 @@ public abstract class SortDefaultUnitTests {
 
 	@Test
 	public void returnsNullForNoDefault() throws Exception {
-		assertSupportedAndResolvedTo(getParameterOfMethod("supportedMethod"), null);
+		assertSupportedAndResolvedTo(getParameterOfMethod("supportedMethod"), Sort.unsorted());
 	}
 
 	@Test
 	public void discoversSimpleDefault() throws Exception {
-		assertSupportedAndResolvedTo(getParameterOfMethod("simpleDefault"), new Sort(Direction.ASC, SORT_FIELDS));
+		assertSupportedAndResolvedTo(getParameterOfMethod("simpleDefault"), Sort.by(SORT_FIELDS).ascending());
 	}
 
 	@Test
