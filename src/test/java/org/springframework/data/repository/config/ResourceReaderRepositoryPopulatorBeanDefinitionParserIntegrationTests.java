@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.core.SpringVersion;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.repository.init.Jackson2ResourceReader;
 import org.springframework.data.repository.init.ResourceReaderRepositoryPopulator;
@@ -99,10 +98,7 @@ public class ResourceReaderRepositoryPopulatorBeanDefinitionParserIntegrationTes
 
 	private static ClassPathResource getPopulatorResource() {
 
-		String springVersion = SpringVersion.getVersion();
-		String populatorsResourceName = springVersion.startsWith("4") ? "populators-spring-4.0.xml" : "populators.xml";
-
-		return new ClassPathResource(populatorsResourceName,
+		return new ClassPathResource("populators.xml",
 				ResourceReaderRepositoryPopulatorBeanDefinitionParserIntegrationTests.class);
 	}
 }
