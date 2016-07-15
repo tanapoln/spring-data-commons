@@ -29,8 +29,10 @@ public class Users {
 
 	static {
 
-		OLIVER = new User("Oliver", "Gierke", new Address("Somewhere", "Dresden"));
-		CHRISTOPH = new User("Christoph", "Strobl", new Address("Somewhere", "Linz"));
+		Address address = new Address("Somewhere", "Dresden");
+		Address address2 = new Address("Somewhere", "Linz");
+		OLIVER = new User("Oliver", "Gierke", address, Arrays.asList("John", "Mike"), Arrays.asList(address, address2));
+		CHRISTOPH = new User("Christoph", "Strobl", address2);
 
 		USERS = Arrays.asList(OLIVER, CHRISTOPH);
 	}

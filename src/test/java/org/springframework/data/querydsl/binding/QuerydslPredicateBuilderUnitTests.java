@@ -105,6 +105,36 @@ public class QuerydslPredicateBuilderUnitTests {
 		assertThat(result, hasItem(Users.OLIVER));
 	}
 
+	@Test
+	public void resolveArgumentShouldCreateListPredicateCorrectly() throws Exception {
+
+		values.add("nickNames", "John");
+
+		Predicate predicate = builder.getPredicate(USER_TYPE, values, DEFAULT_BINDINGS);
+
+		assertThat(predicate, is((Predicate) QUser.user.nickNames.contains("John")));
+
+		List<User> result = CollQueryFactory.from(QUser.user, Users.USERS).where(predicate).fetchResults().getResults();
+
+		assertThat(result, hasSize(1));
+		assertThat(result, hasItem(Users.OLIVER));
+	}
+
+	@Test
+	public void resolveArgumentShouldCreateListWithNestedObjectPredicateCorrectly() throws Exception {
+
+		values.add("oldAddresses.city", "Linz");
+
+		Predicate predicate = builder.getPredicate(USER_TYPE, values, DEFAULT_BINDINGS);
+
+		assertThat(predicate, is((Predicate) QUser.user.oldAddresses.any().city.eq("Linz")));
+
+		List<User> result = CollQueryFactory.from(QUser.user, Users.USERS).where(predicate).fetchResults().getResults();
+
+		assertThat(result, hasSize(1));
+		assertThat(result, hasItem(Users.OLIVER));
+	}
+
 	/**
 	 * @see DATACMNS-669
 	 */

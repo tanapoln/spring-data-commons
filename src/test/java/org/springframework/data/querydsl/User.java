@@ -15,13 +15,12 @@
  */
 package org.springframework.data.querydsl;
 
-import java.util.Date;
-import java.util.List;
-
+import com.querydsl.core.annotations.QueryEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
-import com.querydsl.core.annotations.QueryEntity;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Oliver Gierke
@@ -35,12 +34,19 @@ public class User {
 	public @DateTimeFormat(iso = ISO.DATE) Date dateOfBirth;
 	public Address address;
 	public List<String> nickNames;
+	public List<Address> oldAddresses;
 	public Long inceptionYear;
 
-	public User(String firstname, String lastname, Address address) {
+	public User(String firstname, String lastname, Address address, List<String> nickNames, List<Address> oldAddresses) {
 
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.address = address;
+		this.nickNames = nickNames;
+		this.oldAddresses = oldAddresses;
+	}
+
+	public User(String firstname, String lastname, Address address) {
+		this(firstname, lastname, address, null, null);
 	}
 }

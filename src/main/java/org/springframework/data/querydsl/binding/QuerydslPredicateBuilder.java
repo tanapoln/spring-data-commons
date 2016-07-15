@@ -185,7 +185,13 @@ public class QuerydslPredicateBuilder {
 		Object value = ReflectionUtils.getField(field, entityPath);
 
 		if (path.hasNext()) {
-			return reifyPath(path.next(), (Path<?>) value);
+			if (value instanceof ListPath) {
+				ListPath listPath = (ListPath) value;
+				return reifyPath(path.next(), (Path<?>) listPath.any());
+			}
+			else {
+				return reifyPath(path.next(), (Path<?>) value);
+			}
 		}
 
 		return (Path<?>) value;
@@ -203,7 +209,9 @@ public class QuerydslPredicateBuilder {
 	private Collection<Object> convertToPropertyPathSpecificType(List<String> source, PropertyPath path) {
 
 		PropertyPath leafProperty = path.getLeafProperty();
-		Class<?> targetType = leafProperty.getOwningType().getProperty(leafProperty.getSegment()).getType();
+		TypeInformation<?> property = leafProperty.getOwningType().getProperty(leafProperty.getSegment());
+		Class<?> componentClass = property.isCollectionLike() ? property.getComponentType().getType() : null;
+		Class<?> collectionClass = property.getType();
 
 		if (source.isEmpty() || isSingleElementCollectionWithoutText(source)) {
 			return Collections.emptyList();
@@ -212,9 +220,20 @@ public class QuerydslPredicateBuilder {
 		Collection<Object> target = new ArrayList<Object>(source.size());
 
 		for (String value : source) {
+			Class<?> targetType = collectionClass;
+			int nestedLevel = 0;
+			if (property.isCollectionLike()) {
+				if (value.contains(",")) {
+					targetType = collectionClass;
+				}
+				else {
+					targetType = componentClass;
+					nestedLevel = 1;
+				}
+			}
 
 			target.add(conversionService.canConvert(String.class, targetType)
-					? conversionService.convert(value, TypeDescriptor.forObject(value), getTargetTypeDescriptor(path)) : value);
+					? conversionService.convert(value, TypeDescriptor.forObject(value), getTargetTypeDescriptor(path, nestedLevel)) : value);
 		}
 
 		return target;
@@ -227,7 +246,7 @@ public class QuerydslPredicateBuilder {
 	 * @param path must not be {@literal null}.
 	 * @return
 	 */
-	private static TypeDescriptor getTargetTypeDescriptor(PropertyPath path) {
+	private static TypeDescriptor getTargetTypeDescriptor(PropertyPath path, int nestedLevel) {
 
 		PropertyPath leafProperty = path.getLeafProperty();
 		Class<?> owningType = leafProperty.getOwningType().getType();
@@ -235,12 +254,12 @@ public class QuerydslPredicateBuilder {
 		PropertyDescriptor descriptor = BeanUtils.getPropertyDescriptor(owningType, leafProperty.getSegment());
 
 		if (descriptor == null) {
-			return TypeDescriptor.nested(ReflectionUtils.findField(owningType, leafProperty.getSegment()), 0);
+			return TypeDescriptor.nested(ReflectionUtils.findField(owningType, leafProperty.getSegment()), nestedLevel);
 		}
 
 		return TypeDescriptor.nested(
 				new Property(owningType, descriptor.getReadMethod(), descriptor.getWriteMethod(), leafProperty.getSegment()),
-				0);
+				nestedLevel);
 	}
 
 	/**
